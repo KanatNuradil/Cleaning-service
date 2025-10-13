@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate your cleaning cost instantly.">
+  <title>SparkClean — Cost Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --card: #111723;
+      --muted: #9fb0c0;
+      --text: #e6edf6;
+      --brand: #2dd4bf;
+      --brand-600: #14b8a6;
+      --accent: #60a5fa;
+      --danger: #ef4444;
+      --ring: rgba(45, 212, 191, 0.35);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.2);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 80% -100px, #0e1624, transparent),
+                  radial-gradient(1000px 600px at -100px 30%, #0d1522, transparent),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: saturate(140%) blur(10px);
+      background: rgba(11, 15, 20, 0.6);
+      border-bottom: 1px solid rgba(159,176,192,0.1);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1), 0 10px 20px rgba(96,165,250,0.25);
+    }
+    .nav-links { display: none; gap: 18px; }
+    .nav-links a {
+      color: var(--muted);
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(159,176,192,0.08); }
+    .nav-cta { display: none; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--brand), var(--brand-600));
+      color: #06231e;
+      box-shadow: 0 10px 24px var(--ring);
+      border: 0;
+      cursor: pointer;
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn.secondary {
+      background: #0f1724;
+      color: var(--text);
+      border: 1px solid rgba(159,176,192,0.15);
+      box-shadow: none;
+    }
+    .btn.secondary:hover { background: #121b2b; }
+
+    .menu-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid rgba(159,176,192,0.15);
+      background: #0f1724;
+      color: var(--text);
+      display: grid; place-items: center;
+    }
+    .menu-toggle svg { width: 22px; height: 22px; }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 70px 0 auto 0;
+      background: rgba(11, 15, 20, 0.95);
+      border-bottom: 1px solid rgba(159,176,192,0.1);
+      backdrop-filter: blur(6px);
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu .container {
+      display: grid;
+      gap: 10px;
+      padding: 16px 20px 20px;
+    }
+    .mobile-menu a { padding: 12px; color: var(--muted); border-radius: 10px; }
+    .mobile-menu a:hover { background: rgba(159,176,192,0.08); color: var(--text); }
+
+    /* Page title */
+    .page-title { padding: 34px 0 14px; }
+    .page-title h1 { margin: 0; font-size: 32px; letter-spacing: -0.4px; }
+    .page-title p { margin: 8px 0 0; color: var(--muted); }
+
+    section { padding: 24px 0 36px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; gap: 14px; }
+    .card {
+      background: linear-gradient(180deg, rgba(17, 23, 35, 0.75), rgba(17, 23, 35, 0.6));
+      border: 1px solid rgba(159,176,192,0.12);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    /* Calculator */
+    .calc-layout { display: grid; gap: 16px; }
+    .calc-left { display: grid; gap: 14px; }
+    .calc-right { position: sticky; top: 90px; height: fit-content; }
+    .field { display: grid; gap: 8px; }
+    .field label { font-weight: 600; }
+    .row { display: grid; gap: 10px; }
+    .inline { display: flex; flex-wrap: wrap; gap: 10px; }
+    .opt { display: flex; align-items: center; gap: 10px; }
+    .opt input[type="number"] { width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(159,176,192,0.2); background: #0f1724; color: var(--text); }
+    .select, .text-input { width: 100%; padding: 12px 12px; border-radius: 10px; border: 1px solid rgba(159,176,192,0.2); background:#0f1724; color: var(--text); }
+    .summary { display: grid; gap: 12px; }
+    .summary-line { display: flex; justify-content: space-between; align-items: center; color: var(--muted); }
+    .summary-total { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+    .summary-total .price { font-size: 34px; font-weight: 800; letter-spacing: -0.6px; }
+    .muted-small { color: var(--muted); font-size: 13px; }
+
+    /* Add-on rows */
+    .addon-row {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid rgba(159,176,192,0.12);
+      border-radius: 12px;
+      background: rgba(17, 23, 35, 0.55);
+    }
+    .thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(96,165,250,0.18), rgba(45,212,191,0.18));
+      display: grid; place-items: center;
+      color: #9fbff5;
+      font-weight: 700;
+      font-size: 12px;
+      border: 1px dashed rgba(159,176,192,0.25);
+    }
+    .addon-title { font-weight: 600; margin: 0; }
+    .addon-sub { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+    .qty {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #0f1724;
+      border: 1px solid rgba(159,176,192,0.18);
+      border-radius: 12px;
+      padding: 4px;
+    }
+    .qty button {
+      width: 32px; height: 32px; border-radius: 10px; border: 1px solid rgba(159,176,192,0.18);
+      background: #0b1320; color: var(--text); cursor: pointer;
+    }
+    .qty input {
+      width: 52px; text-align: center; padding: 8px 6px; border: 0; background: transparent; color: var(--text);
+    }
+
+    /* Form layout */
+    .form-section h3 { margin: 0 0 8px; }
+    .form-cols { display: grid; gap: 10px; }
+    .form-cols .field.inline-two { display: grid; gap: 10px; }
+    @media (min-width: 720px) {
+      .form-cols { grid-template-columns: 1fr 1fr; }
+      .form-cols .field.inline-two { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Footer */
+    footer { padding: 22px 0 36px; color: var(--muted); }
+    .foot { display: grid; gap: 10px; align-items: center; }
+
+    @media (min-width: 720px) {
+      .nav-links { display: flex; }
+      .nav-cta { display: inline-flex; }
+      .menu-toggle { display: none; }
+      .contact { grid-template-columns: 1.2fr 1fr; }
+      .foot { grid-template-columns: 1fr auto; }
+      .calc-layout { grid-template-columns: 1.2fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav" role="navigation" aria-label="Main">
+      <a class="brand" href="index.html" aria-label="SparkClean Home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>SparkClean</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary links">
+        <a href="index.html#services">Services</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="index.html#testimonials">Reviews</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn" href="tel:+1234567890" aria-label="Call us">Call Now</a>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Mobile menu">
+      <div class="container">
+        <a href="index.html#services" data-close-mobile>Services</a>
+        <a href="index.html#pricing" data-close-mobile>Pricing</a>
+        <a href="index.html#testimonials" data-close-mobile>Reviews</a>
+        <a href="index.html#contact" data-close-mobile>Contact</a>
+        <a class="btn" href="tel:+1234567890">Call Now</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-title">
+      <div class="container">
+        <h1>Cleaning cost calculator</h1>
+        <p>Configure your space and extras to see an instant estimate.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="container calc-layout">
+        <div class="calc-left">
+          <div class="card">
+            <div class="field">
+              <label>Property type</label>
+              <div class="inline" role="radiogroup" aria-label="Property type">
+                <label class="opt"><input type="radio" name="property" value="apartment" checked> Apartment</label>
+                <label class="opt"><input type="radio" name="property" value="house"> Private house</label>
+              </div>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <label class="field">
+                <span>Rooms</span>
+                <select id="rooms" class="select">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Bathrooms</span>
+                <select id="baths" class="select">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Cleaning type</span>
+                <select id="type" class="select">
+                  <option value="standard" selected>Standard</option>
+                  <option value="deep">Deep / General</option>
+                  <option value="postreno">Post-renovation</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0 0 8px">Additional options</h3>
+            <div class="grid" id="addons">
+              <div class="addon-row" data-key="windows">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Window cleaning (both sides)</p>
+                  <p class="addon-sub">$25 per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="windows" type="number" min="0" step="1" value="1" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="fridge">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Refrigerator cleaning</p>
+                  <p class="addon-sub">$20 per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="fridge" type="number" min="0" step="1" value="1" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="dishwashing">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Dishwashing (per hour)</p>
+                  <p class="addon-sub">$18 per hour</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="dishwashing" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="ironing">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Ironing (per hour)</p>
+                  <p class="addon-sub">$20 per hour</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="ironing" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="closet">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Closet/Pantry cleaning</p>
+                  <p class="addon-sub">$25 per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="closet" type="number" min="0" step="1" value="1" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="chandelier">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Chandelier cleaning (per item)</p>
+                  <p class="addon-sub">$12 each</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="chandelier" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="balcony">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Balcony cleaning</p>
+                  <p class="addon-sub">$25 per balcony</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="balcony" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="walls">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Wall washing (per 10 m²)</p>
+                  <p class="addon-sub">$15 per 10 m²</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="walls" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="blinds">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Blinds cleaning (per 1 m²)</p>
+                  <p class="addon-sub">$2 per 1 m²</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="blinds" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="extraCleaner">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Extra cleaner (per person)</p>
+                  <p class="addon-sub">$25 per person</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="extraCleaner" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="kitchenSet">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Kitchen set cleaning</p>
+                  <p class="addon-sub">$30 per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="kitchenSet" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="oven">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Oven cleaning (inside)</p>
+                  <p class="addon-sub">$20 per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="oven" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="microwave">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Microwave cleaning</p>
+                  <p class="addon-sub">$10 per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="microwave" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="dishwasher">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Dishwasher cleaning</p>
+                  <p class="addon-sub">$12 per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="dishwasher" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="curtains">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Curtain removal/installation</p>
+                  <p class="addon-sub">$25 per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="curtains" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="ceiling">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Ceiling cleaning (per 1 m²)</p>
+                  <p class="addon-sub">$2 per 1 m²</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="ceiling" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="keys">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Key delivery</p>
+                  <p class="addon-sub">$10 per trip</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="keys" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="inline">
+              <a class="btn" href="index.html">Back to homepage</a>
+              <a class="btn secondary" href="tel:+1234567890">Book by phone</a>
+            </div>
+          </div>
+        </div>
+
+        <aside class="calc-right">
+          <div class="card summary">
+            <h3 style="margin:0">Your estimate</h3>
+            <div class="summary-line"><span>Base</span><b id="sum-base">$0</b></div>
+            <div id="summary-items" class="grid"></div>
+            <div class="summary-line"><span>Add-ons</span><b id="sum-addons">$0</b></div>
+            <hr style="border:0; border-top:1px solid rgba(159,176,192,0.12)">
+            <div class="summary-total"><span>Total</span><span class="price" id="sum-total">$0</span></div>
+            <div class="muted-small">This is an instant estimate. Final price may vary after on-site assessment.</div>
+            <a class="btn" href="tel:+1234567890">Call to Book</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="card form-section">
+          <h3>Choose date and time</h3>
+          <div class="row" style="margin-top:8px">
+            <label class="field">
+              <span>Date</span>
+              <input id="date" class="text-input" type="date" required>
+            </label>
+            <label class="field">
+              <span>Time</span>
+              <input id="time" class="text-input" type="time" required>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:14px">
+          <div class="card form-section">
+            <h3>Cleaning address</h3>
+            <div class="form-cols" style="margin-top:8px">
+              <label class="field"><span>Street</span><input id="addr-street" class="text-input" type="text" placeholder="Street" required></label>
+              <label class="field inline-two"><span>House</span><input id="addr-house" class="text-input" type="text" placeholder="House" required></label>
+              <label class="field inline-two"><span>Apartment</span><input id="addr-apartment" class="text-input" type="text" placeholder="Apartment"></label>
+              <label class="field inline-two"><span>Floor</span><input id="addr-floor" class="text-input" type="text" placeholder="Floor"></label>
+              <label class="field" style="grid-column: 1 / -1"><span>Comment or special request</span><textarea id="addr-comment" class="text-input" rows="3" placeholder="Any notes for the cleaners"></textarea></label>
+            </div>
+          </div>
+
+          <div class="card form-section">
+            <h3>Contact details</h3>
+            <div class="form-cols" style="margin-top:8px">
+              <label class="field"><span>First name</span><input id="first-name" class="text-input" type="text" placeholder="First name" required></label>
+              <label class="field"><span>Last name</span><input id="last-name" class="text-input" type="text" placeholder="Last name" required></label>
+              <label class="field"><span>Phone number</span><input id="phone" class="text-input" type="tel" placeholder="+7 (___) ___-__-__" required></label>
+              <label class="field"><span>E-mail</span><input id="email" class="text-input" type="email" placeholder="you@example.com" required></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px; display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap">
+          <div class="muted">Review your details and submit your order.</div>
+          <button id="orderBtn" class="btn">Order Cleaning</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <div class="brand" style="gap:8px">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>SparkClean</span>
+      </div>
+      <small>© <span id="year"></span> SparkClean. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = 'http://localhost:3000/api';
+
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+    menuToggle?.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileMenu?.querySelectorAll('[data-close-mobile]')?.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Check authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in to access the calculator');
+      window.location.href = 'login.html';
+    }
+
+    // Pricing config
+    const PRICES = {
+      base: {
+        apartment: { standard: 60, deep: 100, postreno: 160 },
+        house: { standard: 80, deep: 130, postreno: 200 }
+      },
+      perRoom: 15,
+      perBath: 20,
+      addons: {
+        windows: 25,
+        fridge: 20,
+        closet: 25,
+        dishwashing: 18,
+        ironing: 20,
+        chandelier: 12,
+        balcony: 25,
+        walls: 15,
+        blinds: 2,
+        extraCleaner: 25,
+        kitchenSet: 30,
+        oven: 20,
+        microwave: 10,
+        dishwasher: 12,
+        curtains: 25,
+        ceiling: 2,
+        keys: 10
+      }
+    };
+
+    function getSelectedProperty() {
+      return document.querySelector('input[name="property"]:checked')?.value || 'apartment';
+    }
+
+    function calcBase() {
+      const property = getSelectedProperty();
+      const type = document.getElementById('type').value;
+      const rooms = Number(document.getElementById('rooms').value);
+      const baths = Number(document.getElementById('baths').value);
+      const base = PRICES.base[property][type];
+      return base + rooms * PRICES.perRoom + baths * PRICES.perBath;
+    }
+
+    function calcAddons() {
+      let sum = 0;
+      document.querySelectorAll('[data-q]')?.forEach((input) => {
+        const key = input.getAttribute('data-q');
+        const qty = Number(input.value) || 0;
+        sum += qty * (PRICES.addons[key] || 0);
+      });
+      return sum;
+    }
+
+    function formatUsd(n) { return `$${n.toFixed(0)}`; }
+
+    function updateSummary() {
+      const base = calcBase();
+      const addons = calcAddons();
+      const total = base + addons;
+      document.getElementById('sum-base').textContent = formatUsd(base);
+      document.getElementById('sum-addons').textContent = formatUsd(addons);
+      document.getElementById('sum-total').textContent = formatUsd(total);
+      const itemsWrap = document.getElementById('summary-items');
+      itemsWrap.innerHTML = '';
+      document.querySelectorAll('[data-q]')?.forEach((input) => {
+        const key = input.getAttribute('data-q');
+        const qty = Number(input.value) || 0;
+        if (qty > 0) {
+          const per = PRICES.addons[key] || 0;
+          const line = document.createElement('div');
+          line.className = 'summary-line';
+          line.innerHTML = `<span>${labelFromKey(key)} × ${qty}</span><b>${formatUsd(per * qty)}</b>`;
+          itemsWrap.appendChild(line);
+        }
+      });
+    }
+
+    function labelFromKey(key) {
+      const map = {
+        windows: 'Window cleaning',
+        fridge: 'Refrigerator cleaning',
+        dishwashing: 'Dishwashing (hr)',
+        ironing: 'Ironing (hr)',
+        closet: 'Closet/Pantry cleaning',
+        chandelier: 'Chandelier cleaning',
+        balcony: 'Balcony cleaning',
+        walls: 'Wall washing (10 m²)',
+        blinds: 'Blinds cleaning (1 m²)',
+        extraCleaner: 'Extra cleaner',
+        kitchenSet: 'Kitchen set cleaning',
+        oven: 'Oven cleaning',
+        microwave: 'Microwave cleaning',
+        dishwasher: 'Dishwasher cleaning',
+        curtains: 'Curtain removal/installation',
+        ceiling: 'Ceiling cleaning (1 m²)',
+        keys: 'Key delivery'
+      };
+      return map[key] || key;
+    }
+
+    function collectOrderData() {
+      const property = getSelectedProperty();
+      const rooms = Number(document.getElementById('rooms').value);
+      const baths = Number(document.getElementById('baths').value);
+      const type = document.getElementById('type').value;
+      const base = calcBase();
+      const addons = [];
+      document.querySelectorAll('[data-q]')?.forEach((input) => {
+        const key = input.getAttribute('data-q');
+        const qty = Number(input.value) || 0;
+        if (qty > 0) {
+          addons.push({ key, label: labelFromKey(key), qty, price: PRICES.addons[key] });
+        }
+      });
+      const total = base + addons.reduce((s, a) => s + a.qty * a.price, 0);
+      const schedule = {
+        date: (document.getElementById('date').value || ''),
+        time: (document.getElementById('time').value || ''),
+      };
+      const address = {
+        street: document.getElementById('addr-street').value || '',
+        house: document.getElementById('addr-house').value || '',
+        apartment: document.getElementById('addr-apartment').value || '',
+        floor: document.getElementById('addr-floor').value || '',
+        comment: document.getElementById('addr-comment').value || ''
+      };
+      const contact = {
+        firstName: document.getElementById('first-name').value || '',
+        lastName: document.getElementById('last-name').value || '',
+        phone: document.getElementById('phone').value || '',
+        email: document.getElementById('email').value || ''
+      };
+      return { property, rooms, baths, type, base, addons, total, schedule, address, contact };
+    }
+
+    function buildEmailBody(order) {
+      const lines = [];
+      lines.push('Cleaning Order');
+      lines.push('');
+      lines.push(`Property: ${order.property}`);
+      lines.push(`Rooms: ${order.rooms}, Bathrooms: ${order.baths}`);
+      lines.push(`Cleaning type: ${order.type}`);
+      lines.push(`Base: ${formatUsd(order.base)}`);
+      if (order.addons.length) {
+        lines.push('Add-ons:');
+        order.addons.forEach(a => lines.push(` - ${a.label} x ${a.qty} = ${formatUsd(a.qty * a.price)}`));
+      } else {
+        lines.push('Add-ons: none');
+      }
+      lines.push(`Total: ${formatUsd(order.total)}`);
+      lines.push('');
+      lines.push(`Date: ${order.schedule.date}  Time: ${order.schedule.time}`);
+      lines.push('');
+      lines.push('Address:');
+      lines.push(` ${order.address.street}, House ${order.address.house}${order.address.apartment ? ', Apt ' + order.address.apartment : ''}${order.address.floor ? ', Floor ' + order.address.floor : ''}`);
+      if (order.address.comment) lines.push(` Notes: ${order.address.comment}`);
+      lines.push('');
+      lines.push('Contact:');
+      lines.push(` ${order.contact.firstName} ${order.contact.lastName}`);
+      lines.push(` Phone: ${order.contact.phone}`);
+      lines.push(` Email: ${order.contact.email}`);
+      return lines.join('\n');
+    }
+
+    async function submitOrder(order) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in to place an order');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            property_type: order.property,
+            rooms: order.rooms,
+            bathrooms: order.baths,
+            cleaning_type: order.type,
+            base_price: order.base,
+            addons: order.addons.map(a => ({
+              key: a.key,
+              label: a.label,
+              qty: a.qty,
+              price: a.price
+            })),
+            total_price: order.total,
+            schedule_date: order.schedule.date,
+            schedule_time: order.schedule.time,
+            address_street: order.address.street,
+            address_house: order.address.house,
+            address_apartment: order.address.apartment,
+            address_floor: order.address.floor,
+            address_comment: order.address.comment
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Order placed successfully! We will contact you soon.');
+          window.location.href = 'index.html';
+        } else {
+          alert(result.message || 'Failed to place order');
+        }
+      } catch (error) {
+        alert('Network error. Please try again.');
+        console.error('Order submission error:', error);
+      }
+    }
+
+    ['rooms','baths','type'].forEach(id => {
+      document.getElementById(id).addEventListener('change', updateSummary);
+    });
+    document.querySelectorAll('input[name="property"]').forEach(r => r.addEventListener('change', updateSummary));
+    document.querySelectorAll('[data-q]').forEach(n => n.addEventListener('input', updateSummary));
+
+    // Plus/minus handlers
+    document.querySelectorAll('.addon-row').forEach(row => {
+      const input = row.querySelector('.qty-input');
+      const dec = row.querySelector('.dec');
+      const inc = row.querySelector('.inc');
+      dec.addEventListener('click', () => {
+        const v = Math.max(0, (Number(input.value) || 0) - 1);
+        input.value = String(v);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      inc.addEventListener('click', () => {
+        const v = (Number(input.value) || 0) + 1;
+        input.value = String(v);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+    updateSummary();
+
+    // Order submit
+    document.getElementById('orderBtn').addEventListener('click', () => {
+      const order = collectOrderData();
+      // Simple required check
+      if (!order.schedule.date || !order.schedule.time) { alert('Please select date and time.'); return; }
+      if (!order.address.street || !order.address.house) { alert('Please fill Street and House.'); return; }
+      if (!order.contact.firstName || !order.contact.lastName || !order.contact.phone || !order.contact.email) { alert('Please fill all contact details.'); return; }
+      submitOrder(order);
+    });
+  </script>
+</body>
+</html>
+
+

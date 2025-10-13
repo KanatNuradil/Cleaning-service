@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your SparkClean account">
+  <title>SparkClean — Sign Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --card: #111723;
+      --muted: #9fb0c0;
+      --text: #e6edf6;
+      --brand: #2dd4bf;
+      --brand-600: #14b8a6;
+      --accent: #60a5fa;
+      --danger: #ef4444;
+      --ring: rgba(45, 212, 191, 0.35);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.2);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 80% -100px, #0e1624, transparent),
+                  radial-gradient(1000px 600px at -100px 30%, #0d1522, transparent),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: linear-gradient(180deg, rgba(17, 23, 35, 0.75), rgba(17, 23, 35, 0.6));
+      border: 1px solid rgba(159,176,192,0.12);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1), 0 10px 20px rgba(96,165,250,0.25);
+    }
+    .brand-text {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .auth-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      text-align: center;
+      letter-spacing: -0.4px;
+    }
+    .auth-subtitle {
+      color: var(--muted);
+      text-align: center;
+      margin: 0 0 32px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(159,176,192,0.2);
+      background: #0f1724;
+      color: var(--text);
+      font-size: 16px;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-600));
+      color: #06231e;
+      border: 0;
+      cursor: pointer;
+      box-shadow: 0 10px 24px var(--ring);
+      margin-bottom: 20px;
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .auth-links {
+      text-align: center;
+      color: var(--muted);
+    }
+    .auth-links a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .auth-links a:hover { text-decoration: underline; }
+
+    .error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .success {
+      background: rgba(45, 212, 191, 0.1);
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      color: #6ee7b7;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+
+    .password-strength {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .strength-weak { color: #fca5a5; }
+    .strength-medium { color: #fbbf24; }
+    .strength-strong { color: #6ee7b7; }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <div class="brand-text">SparkClean</div>
+      </div>
+      
+      <h1 class="auth-title">Create account</h1>
+      <p class="auth-subtitle">Join SparkClean today</p>
+
+      <div id="error" class="error" style="display: none;"></div>
+      <div id="success" class="success" style="display: none;"></div>
+
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="firstName">First name</label>
+          <input type="text" id="firstName" name="firstName" class="form-input" required placeholder="Your first name">
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last name</label>
+          <input type="text" id="lastName" name="lastName" class="form-input" required placeholder="Your last name">
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" class="form-input" required placeholder="you@example.com">
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Phone number</label>
+          <input type="tel" id="phone" name="phone" class="form-input" required placeholder="+7 (___) ___-__-__">
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-input" required placeholder="Create a password">
+          <div id="passwordStrength" class="password-strength"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" required placeholder="Confirm your password">
+        </div>
+
+        <button type="submit" class="btn" id="signupBtn">Create Account</button>
+        <div class="loading" id="loading">Creating account...</div>
+      </form>
+
+      <div class="auth-links">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000/api';
+
+    function showError(message) {
+      const errorDiv = document.getElementById('error');
+      const successDiv = document.getElementById('success');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      successDiv.style.display = 'none';
+    }
+
+    function showSuccess(message) {
+      const errorDiv = document.getElementById('error');
+      const successDiv = document.getElementById('success');
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      errorDiv.style.display = 'none';
+    }
+
+    function setLoading(loading) {
+      document.getElementById('signupBtn').disabled = loading;
+      document.getElementById('loading').style.display = loading ? 'block' : 'none';
+    }
+
+    function checkPasswordStrength(password) {
+      const strengthDiv = document.getElementById('passwordStrength');
+      if (!password) {
+        strengthDiv.textContent = '';
+        return;
+      }
+
+      let score = 0;
+      if (password.length >= 8) score++;
+      if (/[a-z]/.test(password)) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      if (score < 3) {
+        strengthDiv.textContent = 'Weak password';
+        strengthDiv.className = 'password-strength strength-weak';
+      } else if (score < 4) {
+        strengthDiv.textContent = 'Medium strength';
+        strengthDiv.className = 'password-strength strength-medium';
+      } else {
+        strengthDiv.textContent = 'Strong password';
+        strengthDiv.className = 'password-strength strength-strong';
+      }
+    }
+
+    document.getElementById('password').addEventListener('input', (e) => {
+      checkPasswordStrength(e.target.value);
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const password = formData.get('password');
+      const confirmPassword = formData.get('confirmPassword');
+
+      if (password !== confirmPassword) {
+        showError('Passwords do not match');
+        return;
+      }
+
+      if (password.length < 8) {
+        showError('Password must be at least 8 characters long');
+        return;
+      }
+
+      const data = {
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        password: password
+      };
+
+      setLoading(true);
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showSuccess('Account created successfully! Redirecting to login...');
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+        } else {
+          showError(result.message || 'Registration failed');
+        }
+      } catch (error) {
+        showError('Network error. Please try again.');
+        console.error('Registration error:', error);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Check if already logged in
+    if (localStorage.getItem('token')) {
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

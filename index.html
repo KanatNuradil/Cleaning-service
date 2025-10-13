@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Professional home and office cleaning service. Affordable pricing, trusted cleaners, easy booking.">
+  <title>SparkClean — Professional Cleaning Service</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --card: #111723;
+      --muted: #9fb0c0;
+      --text: #e6edf6;
+      --brand: #2dd4bf;
+      --brand-600: #14b8a6;
+      --accent: #60a5fa;
+      --danger: #ef4444;
+      --ring: rgba(45, 212, 191, 0.35);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.2);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 80% -100px, #0e1624, transparent),
+                  radial-gradient(1000px 600px at -100px 30%, #0d1522, transparent),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: saturate(140%) blur(10px);
+      background: rgba(11, 15, 20, 0.6);
+      border-bottom: 1px solid rgba(159,176,192,0.1);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1), 0 10px 20px rgba(96,165,250,0.25);
+    }
+    .nav-links { display: none; gap: 18px; }
+    .nav-links a {
+      color: var(--muted);
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(159,176,192,0.08); }
+    .nav-cta { display: none; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--brand), var(--brand-600));
+      color: #06231e;
+      box-shadow: 0 10px 24px var(--ring);
+      border: 0;
+      cursor: pointer;
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn.secondary {
+      background: #0f1724;
+      color: var(--text);
+      border: 1px solid rgba(159,176,192,0.15);
+      box-shadow: none;
+    }
+    .btn.secondary:hover { background: #121b2b; }
+
+    .menu-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid rgba(159,176,192,0.15);
+      background: #0f1724;
+      color: var(--text);
+      display: grid; place-items: center;
+    }
+    .menu-toggle svg { width: 22px; height: 22px; }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 70px 0 auto 0;
+      background: rgba(11, 15, 20, 0.95);
+      border-bottom: 1px solid rgba(159,176,192,0.1);
+      backdrop-filter: blur(6px);
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu .container {
+      display: grid;
+      gap: 10px;
+      padding: 16px 20px 20px;
+    }
+    .mobile-menu a { padding: 12px; color: var(--muted); border-radius: 10px; }
+    .mobile-menu a:hover { background: rgba(159,176,192,0.08); color: var(--text); }
+
+    /* Hero */
+    .hero {
+      padding: 48px 0 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-grid {
+      display: grid;
+      gap: 28px;
+    }
+    .eyebrow { color: var(--brand); font-weight: 700; letter-spacing: 0.4px; }
+    .hero h1 {
+      font-size: 36px;
+      line-height: 1.15;
+      margin: 10px 0 14px;
+      letter-spacing: -0.5px;
+    }
+    .hero p { color: var(--muted); font-size: 16px; }
+    .hero-ctas { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+    .hero-card {
+      background: linear-gradient(180deg, rgba(17, 23, 35, 0.7), rgba(17, 23, 35, 0.6));
+      border: 1px solid rgba(159,176,192,0.12);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+    .hero-card small { color: var(--muted); }
+
+    /* Sections */
+    section { padding: 36px 0; }
+    .section-title { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.2px; }
+    .muted { color: var(--muted); }
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(17, 23, 35, 0.75), rgba(17, 23, 35, 0.6));
+      border: 1px solid rgba(159,176,192,0.12);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .card h3 { margin: 0 0 6px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); }
+
+    /* Services */
+    .service-icon { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; background: rgba(96,165,250,0.15); color: #9cc7ff; }
+
+    /* Pricing */
+    .pricing { display: grid; gap: 14px; }
+    .price { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+    .features { display: grid; gap: 8px; margin: 10px 0 14px; }
+    .features li { list-style: none; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+    .features li::before { content: "✔"; color: var(--brand); }
+
+    /* Testimonials */
+    .testimonial { display: grid; gap: 10px; }
+    .stars { color: #fbbf24; letter-spacing: 2px; }
+
+    /* Contact */
+    .contact {
+      display: grid;
+      gap: 14px;
+    }
+    .contact-item { display: flex; align-items: center; gap: 12px; color: var(--muted); }
+    .contact-item b { color: var(--text); }
+
+    /* Footer */
+    footer { padding: 22px 0 36px; color: var(--muted); }
+    .foot { display: grid; gap: 10px; align-items: center; }
+
+    /* Larger screens */
+    @media (min-width: 720px) {
+      .nav-links { display: flex; }
+      .nav-cta { display: inline-flex; }
+      .menu-toggle { display: none; }
+      .hero { padding: 72px 0 36px; }
+      .hero h1 { font-size: 56px; }
+      .hero p { font-size: 18px; }
+      .hero-grid { grid-template-columns: 1.2fr 1fr; align-items: center; gap: 32px; }
+      .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+      .pricing { grid-template-columns: repeat(3, 1fr); }
+      .contact { grid-template-columns: 1.2fr 1fr; }
+      .foot { grid-template-columns: 1fr auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav" role="navigation" aria-label="Main">
+      <a class="brand" href="#home" aria-label="SparkClean Home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>SparkClean</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary links">
+        <a href="#services">Services</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#testimonials">Reviews</a>
+        <a href="#contact">Contact</a>
+        <a href="Calculation.html">Calculator</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn" href="tel:+1234567890" aria-label="Call us">Call Now</a>
+        <div id="auth-buttons" style="display: none;">
+          <a class="btn secondary" href="login.html" id="loginBtn">Login</a>
+          <a class="btn" href="signup.html" id="signupBtn">Sign Up</a>
+        </div>
+        <div id="user-menu" style="display: none;">
+          <span id="user-name" class="muted"></span>
+          <button class="btn secondary" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Mobile menu">
+      <div class="container">
+        <a href="#services" data-close-mobile>Services</a>
+        <a href="#pricing" data-close-mobile>Pricing</a>
+        <a href="#testimonials" data-close-mobile>Reviews</a>
+        <a href="#contact" data-close-mobile>Contact</a>
+        <a href="Calculation.html" data-close-mobile>Calculator</a>
+        <a class="btn" href="tel:+1234567890">Call Now</a>
+        <div id="mobile-auth" style="display: none;">
+          <a href="login.html" data-close-mobile>Login</a>
+          <a href="signup.html" data-close-mobile>Sign Up</a>
+        </div>
+        <div id="mobile-user" style="display: none;">
+          <span id="mobile-user-name" class="muted"></span>
+          <button class="btn secondary" id="mobile-logoutBtn">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Trusted • Insured • 5-Star Rated</div>
+          <h1>Make your space spotless without lifting a finger</h1>
+          <p>Reliable home and office cleaning with flexible scheduling and upfront pricing. Our vetted pros bring supplies and leave your space sparkling.</p>
+          <div class="hero-ctas">
+            <a class="btn" href="tel:+1234567890">Book by Phone</a>
+            <a class="btn secondary" href="#pricing">See Pricing</a>
+            <a class="btn secondary" href="Calculation.html">Calculate Cost</a>
+          </div>
+          <div class="hero-card">
+            <small>Next-day appointments available • No hidden fees • Satisfaction guaranteed</small>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 style="margin-top:0">Quick quote</h3>
+            <p class="muted">Prefer email? Request a call back.</p>
+            <form id="quoteForm" autocomplete="on" style="display:grid; gap:10px; margin-top:10px">
+              <label>
+                <span class="muted" style="display:block; font-size:13px">Name</span>
+                <input type="text" name="name" required placeholder="Your full name" style="width:100%; padding:12px 12px; border-radius:10px; border:1px solid rgba(159,176,192,0.2); background:#0f1724; color:var(--text)">
+              </label>
+              <label>
+                <span class="muted" style="display:block; font-size:13px">Phone</span>
+                <input type="tel" name="phone" required placeholder="e.g. +1 234 567 890" style="width:100%; padding:12px 12px; border-radius:10px; border:1px solid rgba(159,176,192,0.2); background:#0f1724; color:var(--text)">
+              </label>
+              <label>
+                <span class="muted" style="display:block; font-size:13px">Service type</span>
+                <select name="service" required style="width:100%; padding:12px 12px; border-radius:10px; border:1px solid rgba(159,176,192,0.2); background:#0f1724; color:var(--text)">
+                  <option value="Standard Cleaning">Standard Cleaning</option>
+                  <option value="Deep Cleaning">Deep Cleaning</option>
+                  <option value="Move In/Out">Move In/Out</option>
+                  <option value="Office Cleaning">Office Cleaning</option>
+                </select>
+              </label>
+              <button class="btn" type="submit">Request Quote</button>
+              <small class="muted">By submitting, you agree to be contacted about your request.</small>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container">
+        <h2 class="section-title">Services</h2>
+        <p class="muted" style="margin:0 0 14px">Choose the clean that fits your space and schedule.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <div class="service-icon" aria-hidden="true">🧽</div>
+            <h3>Standard Cleaning</h3>
+            <p>Regular upkeep for kitchens, bathrooms, bedrooms and living areas.</p>
+          </div>
+          <div class="card">
+            <div class="service-icon" aria-hidden="true">🧹</div>
+            <h3>Deep Cleaning</h3>
+            <p>Detailed attention for high-traffic areas, appliances and baseboards.</p>
+          </div>
+          <div class="card">
+            <div class="service-icon" aria-hidden="true">🚚</div>
+            <h3>Move In/Out</h3>
+            <p>Top-to-bottom clean to prepare your home for the next chapter.</p>
+          </div>
+          <div class="card">
+            <div class="service-icon" aria-hidden="true">🏢</div>
+            <h3>Office Cleaning</h3>
+            <p>After-hours cleaning to keep your workspace productive and healthy.</p>
+          </div>
+          <div class="card">
+            <div class="service-icon" aria-hidden="true">🐶</div>
+            <h3>Pet-Friendly</h3>
+            <p>Safe products and methods for homes with furry family members.</p>
+          </div>
+          <div class="card">
+            <div class="service-icon" aria-hidden="true">🌿</div>
+            <h3>Eco Options</h3>
+            <p>Green products available on request at no extra cost.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="container">
+        <h2 class="section-title">Transparent pricing</h2>
+        <p class="muted" style="margin:0 0 14px">No surprises. Customize any package to your needs.</p>
+        <div class="pricing">
+          <div class="card">
+            <h3>Essential</h3>
+            <div class="price">$89</div>
+            <ul class="features">
+              <li>Kitchen & bathrooms</li>
+              <li>Bedrooms & common areas</li>
+              <li>Floors vacuum & mop</li>
+            </ul>
+            <a class="btn" href="tel:+1234567890">Book Essential</a>
+          </div>
+          <div class="card" style="border-color: rgba(45, 212, 191, 0.35)">
+            <h3>Deep Clean</h3>
+            <div class="price">$159</div>
+            <ul class="features">
+              <li>Appliance exteriors</li>
+              <li>Baseboards & detail</li>
+              <li>High-touch disinfection</li>
+            </ul>
+            <a class="btn" href="tel:+1234567890">Book Deep Clean</a>
+          </div>
+          <div class="card">
+            <h3>Move In/Out</h3>
+            <div class="price">$249</div>
+            <ul class="features">
+              <li>Inside cabinets</li>
+              <li>Inside fridge & oven</li>
+              <li>Windows (interior)</li>
+            </ul>
+            <a class="btn" href="tel:+1234567890">Book Move Clean</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="testimonials">
+      <div class="container">
+        <h2 class="section-title">Loved by homeowners</h2>
+        <div class="grid">
+          <div class="card testimonial">
+            <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <p>They left our apartment spotless before move-out. Full deposit back! Scheduling was easy and on time.</p>
+            <small class="muted">— Alex R.</small>
+          </div>
+          <div class="card testimonial">
+            <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <p>Reliable weekly service. Love the eco-friendly option for our toddler and pets.</p>
+            <small class="muted">— Priya K.</small>
+          </div>
+          <div class="card testimonial">
+            <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <p>Great attention to detail and professional cleaners. Highly recommend!</p>
+            <small class="muted">— Marco D.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container contact">
+        <div>
+          <h2 class="section-title">Get in touch</h2>
+          <p class="muted">Serving the greater metro area. Same/next-day slots often available.</p>
+          <div class="grid" style="margin-top:12px">
+            <div class="contact-item">
+              <span aria-hidden="true">📞</span>
+              <a href="tel:+1234567890"><b>+1 (234) 567-890</b></a>
+            </div>
+            <div class="contact-item">
+              <span aria-hidden="true">✉️</span>
+              <a href="mailto:hello@sparkclean.co"><b>hello@sparkclean.co</b></a>
+            </div>
+            <div class="contact-item">
+              <span aria-hidden="true">📍</span>
+              <span><b>Downtown & suburbs</b> — Mon–Sat, 8am–6pm</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Have questions?</h3>
+          <p class="muted">Text us and well reply within minutes during business hours.</p>
+          <a class="btn" href="sms:+1234567890">Text Us</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <div class="brand" style="gap:8px">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>SparkClean</span>
+      </div>
+      <small>© <span id="year"></span> SparkClean. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+    menuToggle?.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileMenu?.querySelectorAll('[data-close-mobile]')?.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Authentication state management
+    function updateAuthUI() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      const authButtons = document.getElementById('auth-buttons');
+      const userMenu = document.getElementById('user-menu');
+      const mobileAuth = document.getElementById('mobile-auth');
+      const mobileUser = document.getElementById('mobile-user');
+      
+      if (token && user.firstName) {
+        // User is logged in
+        authButtons.style.display = 'none';
+        userMenu.style.display = 'flex';
+        mobileAuth.style.display = 'none';
+        mobileUser.style.display = 'flex';
+        
+        document.getElementById('user-name').textContent = `Hello, ${user.firstName}`;
+        document.getElementById('mobile-user-name').textContent = `Hello, ${user.firstName}`;
+      } else {
+        // User is not logged in
+        authButtons.style.display = 'flex';
+        userMenu.style.display = 'none';
+        mobileAuth.style.display = 'flex';
+        mobileUser.style.display = 'none';
+      }
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      updateAuthUI();
+      window.location.reload();
+    }
+
+    // Event listeners
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('mobile-logoutBtn')?.addEventListener('click', logout);
+
+    // Initialize auth UI
+    updateAuthUI();
+
+    // Quote form (demo only)
+    const quoteForm = document.getElementById('quoteForm');
+    quoteForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const form = new FormData(quoteForm);
+      const name = form.get('name');
+      const phone = form.get('phone');
+      const service = form.get('service');
+      alert(`Thanks ${name}! We will call ${phone} about ${service} shortly.`);
+      quoteForm.reset();
+    });
+  </script>
+</body>
+</html>
+
+
