@@ -1,6 +1,6 @@
-# SparkClean Backend
+# Taza bolsyn Backend
 
-A Node.js backend API for the SparkClean cleaning service with user authentication and order management.
+A Node.js backend API for the Taza bolsyn cleaning service with user authentication and order management.
 
 ## Features
 
