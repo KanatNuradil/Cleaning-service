@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate your cleaning cost instantly.">
+  <title>TazaBolsyn — Cost Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  // CSS
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --card: #111723;
+      --muted: #9fb0c0;
+      --text: #e6edf6;
+      --brand: #2dd4bf;
+      --brand-600: #14b8a6;
+      --accent: #60a5fa;
+      --danger: #ef4444;
+      --ring: rgba(45, 212, 191, 0.35);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.2);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 80% -100px, #0e1624, transparent),
+                  radial-gradient(1000px 600px at -100px 30%, #0d1522, transparent),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: saturate(140%) blur(10px);
+      background: rgba(11, 15, 20, 0.6);
+      border-bottom: 1px solid rgba(159,176,192,0.1);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1), 0 10px 20px rgba(96,165,250,0.25);
+    }
+    .nav-links { display: none; gap: 18px; }
+    .nav-links a {
+      color: var(--muted);
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(159,176,192,0.08); }
+    .nav-cta { display: none; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--brand), var(--brand-600));
+      color: #06231e;
+      box-shadow: 0 10px 24px var(--ring);
+      border: 0;
+      cursor: pointer;
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn.secondary {
+      background: #0f1724;
+      color: var(--text);
+      border: 1px solid rgba(159,176,192,0.15);
+      box-shadow: none;
+    }
+    .btn.secondary:hover { background: #121b2b; }
+
+    .menu-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid rgba(159,176,192,0.15);
+      background: #0f1724;
+      color: var(--text);
+      display: grid; place-items: center;
+    }
+    .menu-toggle svg { width: 22px; height: 22px; }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 70px 0 auto 0;
+      background: rgba(11, 15, 20, 0.95);
+      border-bottom: 1px solid rgba(159,176,192,0.1);
+      backdrop-filter: blur(6px);
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu .container {
+      display: grid;
+      gap: 10px;
+      padding: 16px 20px 20px;
+    }
+    .mobile-menu a { padding: 12px; color: var(--muted); border-radius: 10px; }
+    .mobile-menu a:hover { background: rgba(159,176,192,0.08); color: var(--text); }
+
+    /* Page title */
+    .page-title { padding: 34px 0 14px; }
+    .page-title h1 { margin: 0; font-size: 32px; letter-spacing: -0.4px; }
+    .page-title p { margin: 8px 0 0; color: var(--muted); }
+
+    section { padding: 24px 0 36px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; gap: 14px; }
+    .card {
+      background: linear-gradient(180deg, rgba(17, 23, 35, 0.75), rgba(17, 23, 35, 0.6));
+      border: 1px solid rgba(159,176,192,0.12);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    /* Calculator */
+    .calc-layout { display: grid; gap: 16px; }
+    .calc-left { display: grid; gap: 14px; }
+    .calc-right { position: sticky; top: 90px; height: fit-content; }
+    .field { display: grid; gap: 8px; }
+    .field label { font-weight: 600; }
+    .row { display: grid; gap: 10px; }
+    .inline { display: flex; flex-wrap: wrap; gap: 10px; }
+    .opt { display: flex; align-items: center; gap: 10px; }
+    .opt input[type="number"] { width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(159,176,192,0.2); background: #0f1724; color: var(--text); }
+    .select, .text-input { width: 100%; padding: 12px 12px; border-radius: 10px; border: 1px solid rgba(159,176,192,0.2); background:#0f1724; color: var(--text); }
+    .summary { display: grid; gap: 12px; }
+    .summary-line { display: flex; justify-content: space-between; align-items: center; color: var(--muted); }
+    .summary-total { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+    .summary-total .price { font-size: 34px; font-weight: 800; letter-spacing: -0.6px; }
+    .muted-small { color: var(--muted); font-size: 13px; }
+    .map-trigger { margin-left: auto; }
+    .map-modal { position: fixed; inset: 0; background: rgba(5,9,15,0.8); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
+    .map-modal.open { display: flex; }
+    .map-modal__content { background: #0f1724; border-radius: 16px; width: min(900px, 100%); max-height: 90vh; display: flex; flex-direction: column; border: 1px solid rgba(159,176,192,0.2); box-shadow: 0 25px 60px rgba(0,0,0,0.45); }
+    .map-modal__header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(159,176,192,0.15); }
+    .map-modal__body { padding: 16px 20px; }
+    .map-modal__map { width: 100%; height: 420px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(159,176,192,0.15); }
+    .map-modal__footer { padding: 14px 20px 20px; border-top: 1px solid rgba(159,176,192,0.15); display: flex; flex-direction: column; gap: 10px; }
+    .map-status { color: var(--muted); font-size: 14px; min-height: 24px; }
+    .map-close { background: transparent; border: 1px solid rgba(159,176,192,0.3); color: var(--muted); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; }
+    .status-note { display: none; margin-top: 10px; padding: 10px 12px; border-radius: 12px; font-size: 14px; }
+    .status-note.success { background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.3); color: #6ee7b7; }
+    .status-note.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+    /* Add-on rows */
+    .addon-row {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid rgba(159,176,192,0.12);
+      border-radius: 12px;
+      background: rgba(17, 23, 35, 0.55);
+    }
+    .thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(96,165,250,0.18), rgba(45,212,191,0.18));
+      display: grid; place-items: center;
+      color: #9fbff5;
+      font-weight: 700;
+      font-size: 12px;
+      border: 1px dashed rgba(159,176,192,0.25);
+    }
+    .addon-title { font-weight: 600; margin: 0; }
+    .addon-sub { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+    .qty {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #0f1724;
+      border: 1px solid rgba(159,176,192,0.18);
+      border-radius: 12px;
+      padding: 4px;
+    }
+    .qty button {
+      width: 32px; height: 32px; border-radius: 10px; border: 1px solid rgba(159,176,192,0.18);
+      background: #0b1320; color: var(--text); cursor: pointer;
+    }
+    .qty input {
+      width: 52px; text-align: center; padding: 8px 6px; border: 0; background: transparent; color: var(--text);
+    }
+
+    /* Form layout */
+    .form-section h3 { margin: 0 0 8px; }
+    .form-cols { display: grid; gap: 10px; }
+    .form-cols .field.inline-two { display: grid; gap: 10px; }
+    @media (min-width: 720px) {
+      .form-cols { grid-template-columns: 1fr 1fr; }
+      .form-cols .field.inline-two { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Footer */
+    footer { padding: 22px 0 36px; color: var(--muted); }
+    .foot { display: grid; gap: 10px; align-items: center; }
+
+    @media (min-width: 720px) {
+      .nav-links { display: flex; }
+      .nav-cta { display: inline-flex; }
+      .menu-toggle { display: none; }
+      .contact { grid-template-columns: 1.2fr 1fr; }
+      .foot { grid-template-columns: 1fr auto; }
+      .calc-layout { grid-template-columns: 1.2fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav" role="navigation" aria-label="Main">
+      <a class="brand" href="index.html" aria-label="TazaBolsyn Home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>TazaBolsyn</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary links">
+        <a href="index.html#services">Services</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="index.html#testimonials">Reviews</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn" href="tel:+1234567890" aria-label="Call us">Call Now</a>
+        <a class="btn secondary" href="account.html" id="profileBtn" style="display:none">Profile</a>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Mobile menu">
+      <div class="container">
+        <a href="index.html#services" data-close-mobile>Services</a>
+        <a href="index.html#pricing" data-close-mobile>Pricing</a>
+        <a href="index.html#testimonials" data-close-mobile>Reviews</a>
+        <a href="index.html#contact" data-close-mobile>Contact</a>
+        <a class="btn" href="tel:+1234567890">Call Now</a>
+        <a class="btn secondary" href="account.html" id="mobileProfileBtn" data-close-mobile style="display:none">Profile</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-title">
+      <div class="container">
+        <h1>Cleaning cost calculator</h1>
+        <p>Configure your space and extras to see an instant estimate.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="container calc-layout">
+        <div class="calc-left">
+          <div class="card">
+            <div class="field">
+              <label>Property type</label>
+              <div class="inline" role="radiogroup" aria-label="Property type">
+                <label class="opt"><input type="radio" name="property" value="apartment" checked> Apartment</label>
+                <label class="opt"><input type="radio" name="property" value="house"> Private house</label>
+              </div>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <label class="field">
+                <span>Rooms</span>
+                <select id="rooms" class="select">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Bathrooms</span>
+                <select id="baths" class="select">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Cleaning type</span>
+                <select id="type" class="select">
+                  <option value="standard" selected>Standard</option>
+                  <option value="deep">Deep / General</option>
+                  <option value="postreno">Post-renovation</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0 0 8px">Additional options</h3>
+            <div class="grid" id="addons">
+              <div class="addon-row" data-key="windows">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Window cleaning (both sides)</p>
+                  <p class="addon-sub">4200₸ per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="windows" type="number" min="0" step="1" value="1" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="fridge">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Refrigerator cleaning</p>
+                  <p class="addon-sub">3500₸ per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="fridge" type="number" min="0" step="1" value="1" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="dishwashing">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Dishwashing (per hour)</p>
+                  <p class="addon-sub">3500₸ per hour</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="dishwashing" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="ironing">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Ironing (per hour)</p>
+                  <p class="addon-sub">3500₸ per hour</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="ironing" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="closet">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Closet/Pantry cleaning</p>
+                  <p class="addon-sub">2500₸ per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="closet" type="number" min="0" step="1" value="1" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="chandelier">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Chandelier cleaning (per item)</p>
+                  <p class="addon-sub">2000₸ each</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="chandelier" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="balcony">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Balcony cleaning</p>
+                  <p class="addon-sub">6000₸ per balcony</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="balcony" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="walls">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Wall washing (per 10 m²)</p>
+                  <p class="addon-sub">10000₸ per 10 m²</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="walls" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="blinds">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Blinds cleaning (per 1 m²)</p>
+                  <p class="addon-sub">1500₸ per 1 m²</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="blinds" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="extraCleaner">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Extra cleaner (per person)</p>
+                  <p class="addon-sub">7000₸ per person</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="extraCleaner" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="kitchenSet">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Kitchen set cleaning</p>
+                  <p class="addon-sub">8000₸ per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="kitchenSet" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="oven">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Oven cleaning (inside)</p>
+                  <p class="addon-sub">4500₸ per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="oven" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="microwave">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Microwave cleaning</p>
+                  <p class="addon-sub">2000₸ per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="microwave" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="dishwasher">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Dishwasher cleaning</p>
+                  <p class="addon-sub">2000₸ per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="dishwasher" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="curtains">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Curtain removal/installation</p>
+                  <p class="addon-sub">2500₸ per job</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="curtains" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="ceiling">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Ceiling cleaning (per 1 m²)</p>
+                  <p class="addon-sub">1500₸ per 1 m²</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="ceiling" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="addon-row" data-key="keys">
+                <div class="thumb">Photo</div>
+                <div>
+                  <p class="addon-title">Key delivery</p>
+                  <p class="addon-sub">3000₸ per trip</p>
+                </div>
+                <div class="qty">
+                  <button type="button" class="dec" aria-label="Decrease">−</button>
+                  <input class="qty-input" data-q="keys" type="number" min="0" step="1" value="0" readonly>
+                  <button type="button" class="inc" aria-label="Increase">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="inline">
+              <a class="btn" href="index.html">Back to homepage</a>
+              <a class="btn secondary" href="tel:+1234567890">Book by phone</a>
+            </div>
+          </div>
+        </div>
+
+        <aside class="calc-right">
+          <div class="card summary">
+            <h3 style="margin:0">Your estimate</h3>
+            <div class="summary-line"><span>Base</span><b id="sum-base">0₸</b></div>
+            <div id="summary-items" class="grid"></div>
+            <div class="summary-line"><span>Add-ons</span><b id="sum-addons">0₸</b></div>
+            <hr style="border:0; border-top:1px solid rgba(159,176,192,0.12)">
+            <div class="summary-total"><span>Total</span><span class="price" id="sum-total">0₸</span></div>
+            <div class="muted-small" id="cityNotice"></div>
+            <div class="muted-small">This is an instant estimate. Final price may vary after on-site assessment.</div>
+            <button class="btn secondary" type="button" id="detailsBtn">Enter date & address</button>
+            <a class="btn" href="tel:+1234567890">Call to Book</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="card form-section" id="scheduleSection">
+          <h3>Choose date and time</h3>
+          <div class="row" style="margin-top:8px">
+            <label class="field">
+              <span>Date</span>
+              <input id="date" class="text-input" type="date" required>
+            </label>
+            <label class="field">
+              <span>Time</span>
+              <input id="time" class="text-input" type="time" required>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:14px">
+          <div class="card form-section">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <h3 style="margin:0">Cleaning address</h3>
+              <button type="button" class="btn secondary map-trigger" id="mapPickerBtn">Choose on map</button>
+            </div>
+            <div class="form-cols" style="margin-top:8px">
+              <label class="field"><span>Street</span><input id="addr-street" class="text-input" type="text" placeholder="Street" required></label>
+              <label class="field inline-two"><span>House</span><input id="addr-house" class="text-input" type="text" placeholder="House" required></label>
+              <label class="field inline-two"><span>Apartment</span><input id="addr-apartment" class="text-input" type="text" placeholder="Apartment"></label>
+              <label class="field inline-two"><span>Floor</span><input id="addr-floor" class="text-input" type="text" placeholder="Floor"></label>
+              <label class="field" style="grid-column: 1 / -1"><span>Comment or special request</span><textarea id="addr-comment" class="text-input" rows="3" placeholder="Any notes for the cleaners"></textarea></label>
+            </div>
+          </div>
+
+          <div class="card form-section">
+            <h3>Contact details</h3>
+            <div class="form-cols" style="margin-top:8px">
+              <label class="field"><span>First name</span><input id="first-name" class="text-input" type="text" placeholder="First name" required></label>
+              <label class="field"><span>Last name</span><input id="last-name" class="text-input" type="text" placeholder="Last name" required></label>
+              <label class="field"><span>Phone number</span><input id="phone" class="text-input" type="tel" placeholder="+7 (___) ___-__-__" required></label>
+              <label class="field"><span>E-mail</span><input id="email" class="text-input" type="email" placeholder="you@example.com" required></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px; display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap">
+          <div class="muted">Review your details and submit your order.</div>
+          <div id="orderStatus" class="status-note" style="flex:1 1 100%"></div>
+          <button id="orderBtn" class="btn">Order Cleaning</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="mapModal" class="map-modal" aria-hidden="true">
+    <div class="map-modal__content" role="dialog" aria-modal="true" aria-labelledby="mapModalTitle">
+      <div class="map-modal__header">
+        <h3 id="mapModalTitle" style="margin:0">Pick address on map</h3>
+        <button type="button" class="map-close" id="mapCloseBtn" aria-label="Close map">&times;</button>
+      </div>
+      <div class="map-modal__body">
+        <div id="mapContainer" class="map-modal__map"></div>
+      </div>
+      <div class="map-modal__footer">
+        <div class="map-status" id="mapStatus">Click anywhere on the map to drop a pin.</div>
+        <button type="button" class="btn" id="mapApplyBtn">Use this address</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container foot">
+      <div class="brand" style="gap:8px">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>TazaBolsyn</span>
+      </div>
+      <small>© <span id="year"></span> TazaBolsyn. All rights reserved.</small>
+    </div>
+  </footer>
+// JavaScript
+  <script>
+    (function() {
+      const API_BASE = 'http://localhost:3001/api';
+    const profileBtn = document.getElementById('profileBtn');
+    const mobileProfileBtn = document.getElementById('mobileProfileBtn');
+    const detailsBtn = document.getElementById('detailsBtn');
+    const scheduleSection = document.getElementById('scheduleSection');
+    const cityNotice = document.getElementById('cityNotice');
+    const orderStatus = document.getElementById('orderStatus');
+    const mapModal = document.getElementById('mapModal');
+    const mapStatus = document.getElementById('mapStatus');
+    const mapPickerBtn = document.getElementById('mapPickerBtn');
+    const mapCloseBtn = document.getElementById('mapCloseBtn');
+    const mapApplyBtn = document.getElementById('mapApplyBtn');
+    const mapContainerId = 'mapContainer';
+    const YMAPS_API_KEY = '1425d1d5-5cf9-430a-a107-4129e8a0c72a';
+    const FULL_PRICE_CITIES = new Set(['Алматы','Астана','Шымкент']);
+    const CITY_DISCOUNT_PERCENT = 30;
+    const CITY_DISCOUNT_MULTIPLIER = 0.7;
+    const CITY_COORDS = {
+      'Алматы': [43.238949, 76.889709],
+      'Астана': [51.169392, 71.449074],
+      'Шымкент': [42.341684, 69.590099],
+      'Актобе': [50.28394, 57.166978],
+      'Караганда': [49.806667, 73.085],
+      'Тараз': [42.9, 71.366667],
+      'Усть-Каменогорск': [49.948226, 82.62862],
+      'Павлодар': [52.287303, 76.967402],
+      'Атырау': [47.094495, 51.923837],
+      'Семей': [50.411085, 80.227967],
+      'Туркестан': [43.302444, 68.269165],
+      'Костанай': [53.214622, 63.624632],
+      'Петропавл': [54.865466, 69.143047],
+      'Темиртау': [50.05494, 72.948332],
+      'Кокшетау': [53.283333, 69.383333],
+      'Актау': [43.641097, 51.198511],
+      'Уральск': [51.233334, 51.366669],
+      'Жетисай': [40.776667, 68.350833],
+      'Кызылорда': [44.848831, 65.482273]
+    };
+    let activeCity = null;
+    let orderStatusTimer;
+    let ymapLoaderPromise = null;
+    let ymapInstance = null;
+    let mapPlacemark = null;
+    let selectedGeoObject = null;
+
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+    menuToggle?.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileMenu?.querySelectorAll('[data-close-mobile]')?.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    detailsBtn?.addEventListener('click', () => {
+      scheduleSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Check authentication
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      activeCity = storedUser.city || null;
+    } catch (err) {
+      activeCity = null;
+    }
+
+    const token = localStorage.getItem('token');
+    const isLoggedIn = Boolean(token);
+    if (profileBtn) {
+      profileBtn.style.display = isLoggedIn ? 'inline-flex' : 'none';
+    }
+    if (mobileProfileBtn) {
+      mobileProfileBtn.style.display = isLoggedIn ? 'block' : 'none';
+    }
+
+    if (!token) {
+      alert('Please log in to access the calculator');
+      window.location.href = 'login.html';
+      return;
+    }
+    updateCityNotice();
+    loadProfileCity();
+
+    // Pricing config
+    const PRICES = {
+      base: {
+        apartment: { standard: 16000, deep: 26000, postreno: 40000 },
+        house: { standard: 25000, deep: 35000, postreno: 55000 }
+      },
+      perRoom: 15,
+      perBath: 20,
+      addons: {
+        windows: 4500,
+        fridge: 3500,
+        closet: 2500,
+        dishwashing: 3500,
+        ironing: 3500,
+        chandelier: 2000,
+        balcony: 6000,
+        walls: 10000,
+        blinds: 1500,
+        extraCleaner: 7000,
+        kitchenSet: 8000,
+        oven: 4500,
+        microwave: 2000,
+        dishwasher: 2000,
+        curtains: 2500,
+        ceiling: 1500,
+        keys: 3000
+      }
+    };
+
+    function getCityMultiplier() {
+      if (!activeCity) return 1;
+      return FULL_PRICE_CITIES.has(activeCity) ? 1 : CITY_DISCOUNT_MULTIPLIER;
+    }
+
+    function updateCityNotice() {
+      if (!cityNotice) return;
+      cityNotice.textContent = 'Choose your city in your profile.';
+    }
+
+    function showOrderStatus(message, isError = false) {
+      if (!orderStatus) return;
+      clearTimeout(orderStatusTimer);
+      orderStatus.textContent = message;
+      orderStatus.classList.remove('success', 'error');
+      orderStatus.classList.add(isError ? 'error' : 'success');
+      orderStatus.style.display = 'block';
+      orderStatusTimer = setTimeout(() => {
+        orderStatus.style.display = 'none';
+      }, 4000);
+    }
+
+    function loadYmaps() {
+      if (window.ymaps && window.ymaps.Map) {
+        return Promise.resolve(window.ymaps);
+      }
+      if (ymapLoaderPromise) return ymapLoaderPromise;
+      ymapLoaderPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = `https://api-maps.yandex.ru/2.1/?apikey=${YMAPS_API_KEY}&lang=ru_RU`;
+        script.onload = () => window.ymaps.ready(() => resolve(window.ymaps));
+        script.onerror = () => reject(new Error('Failed to load Yandex Maps API'));
+        document.head.appendChild(script);
+      });
+      return ymapLoaderPromise;
+    }
+
+    function getCityCoords() {
+      return CITY_COORDS[activeCity] || [43.238949, 76.889709];
+    }
+
+    function openMapModal() {
+      if (!mapModal) return;
+      mapModal.classList.add('open');
+      mapModal.setAttribute('aria-hidden', 'false');
+      setMapStatus('Loading map...');
+      loadYmaps()
+        .then(initMapInstance)
+        .catch((err) => {
+          console.error(err);
+          setMapStatus('Failed to load map. Please try again.', true);
+        });
+    }
+
+    function closeMapModal() {
+      if (!mapModal) return;
+      mapModal.classList.remove('open');
+      mapModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function setMapStatus(message, isError = false) {
+      if (!mapStatus) return;
+      mapStatus.textContent = message;
+      mapStatus.style.color = isError ? '#fca5a5' : 'var(--muted)';
+    }
+
+    function initMapInstance(ymaps) {
+      if (ymapInstance) {
+        ymapInstance.setCenter(selectedGeoObject?.coords || getCityCoords(), 12);
+        if (selectedGeoObject?.coords) {
+          setPlacemark(selectedGeoObject.coords);
+          setMapStatus(selectedGeoObject.addressLine || 'Address selected.');
+        } else {
+          setMapStatus('Click anywhere on the map to drop a pin.');
+        }
+        return;
+      }
+      ymapInstance = new ymaps.Map(mapContainerId, {
+        center: getCityCoords(),
+        zoom: 12,
+        controls: ['zoomControl', 'geolocationControl', 'searchControl']
+      });
+      const searchControl = ymapInstance.controls.get('searchControl');
+      if (searchControl) {
+        searchControl.options.set({ float: 'right', size: 'large' });
+        searchControl.events.add('resultselect', (e) => {
+          const idx = e.get('index');
+          searchControl.getResult(idx).then((res) => {
+            const coords = res.geometry.getCoordinates();
+            setPlacemark(coords);
+            handleReverseGeocode(coords);
+          });
+        });
+      }
+      ymapInstance.events.add('click', (e) => {
+        const coords = e.get('coords');
+        setPlacemark(coords);
+        handleReverseGeocode(coords);
+      });
+      if (selectedGeoObject?.coords) {
+        setPlacemark(selectedGeoObject.coords);
+        setMapStatus(selectedGeoObject.addressLine || 'Address selected.');
+      } else {
+        setMapStatus('Click anywhere on the map to drop a pin.');
+      }
+    }
+
+    function setPlacemark(coords) {
+      if (!window.ymaps) return;
+      if (mapPlacemark) {
+        mapPlacemark.geometry.setCoordinates(coords);
+      } else {
+        mapPlacemark = new ymaps.Placemark(coords, {}, { draggable: true });
+        mapPlacemark.events.add('dragend', () => {
+          const updatedCoords = mapPlacemark.geometry.getCoordinates();
+          handleReverseGeocode(updatedCoords);
+        });
+        ymapInstance.geoObjects.add(mapPlacemark);
+      }
+    }
+
+    function handleReverseGeocode(coords) {
+      if (!window.ymaps) return;
+      setMapStatus('Looking up address...');
+      window.ymaps.geocode(coords, { results: 1 }).then((res) => {
+        const obj = res.geoObjects.get(0);
+        if (!obj) {
+          const fallback = `Coordinates: ${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`;
+          selectedGeoObject = { coords, addressLine: fallback, components: [] };
+          setMapStatus('Exact address not found. Coordinates captured – adjust fields manually.');
+          return;
+        }
+        selectedGeoObject = {
+          coords,
+          addressLine: obj.getAddressLine(),
+          components: obj.get('metaDataProperty.GeocoderMetaData.Address.Components') || []
+        };
+        setMapStatus(selectedGeoObject.addressLine || 'Address found.');
+      }).catch(() => {
+        const fallback = `Coordinates: ${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`;
+        selectedGeoObject = { coords, addressLine: fallback, components: [] };
+        setMapStatus('Exact address not found. Coordinates captured – adjust fields manually.');
+      });
+    }
+
+    function applySelectedAddress() {
+      if (!selectedGeoObject) {
+        setMapStatus('Select a point on the map first.', true);
+        return;
+      }
+      const getComponent = (kind) => {
+        const comp = selectedGeoObject.components.find((c) => c.kind === kind);
+        return comp ? comp.name : '';
+      };
+      const street = getComponent('street') || getComponent('thoroughfare') || '';
+      const house = getComponent('house') || getComponent('entrance') || '';
+      const addrStreet = document.getElementById('addr-street');
+      const addrHouse = document.getElementById('addr-house');
+      const addrComment = document.getElementById('addr-comment');
+      if (addrStreet && street) addrStreet.value = street;
+      if (addrHouse && house) addrHouse.value = house;
+      if (addrStreet && !street) addrStreet.value = selectedGeoObject.addressLine || '';
+      if (addrComment && selectedGeoObject.addressLine && !addrComment.value) {
+        addrComment.value = selectedGeoObject.addressLine;
+      }
+      closeMapModal();
+    }
+
+    async function loadProfileCity() {
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_BASE}/account/profile`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.message || 'Failed to fetch profile');
+        }
+        activeCity = data.profile?.city || null;
+      } catch (err) {
+        console.warn('Could not load city preference', err);
+      } finally {
+        updateCityNotice();
+        updateSummary();
+      }
+    }
+
+    function getSelectedProperty() {
+      return document.querySelector('input[name="property"]:checked')?.value || 'apartment';
+    }
+
+    function calcBase() {
+      const property = getSelectedProperty();
+      const type = document.getElementById('type').value;
+      const rooms = Number(document.getElementById('rooms').value);
+      const baths = Number(document.getElementById('baths').value);
+      const base = PRICES.base[property][type];
+      const raw = base + rooms * PRICES.perRoom + baths * PRICES.perBath;
+      return raw * getCityMultiplier();
+    }
+
+    function calcAddons() {
+      let sum = 0;
+      document.querySelectorAll('[data-q]')?.forEach((input) => {
+        const key = input.getAttribute('data-q');
+        const qty = Number(input.value) || 0;
+        const perUnit = (PRICES.addons[key] || 0) * getCityMultiplier();
+        sum += qty * perUnit;
+      });
+      return sum;
+    }
+
+    function formatUsd(n) { return `${n.toFixed(0)}₸`; }
+
+    function updateSummary() {
+      const base = calcBase();
+      const addons = calcAddons();
+      const total = base + addons;
+      document.getElementById('sum-base').textContent = formatUsd(base);
+      document.getElementById('sum-addons').textContent = formatUsd(addons);
+      document.getElementById('sum-total').textContent = formatUsd(total);
+      const itemsWrap = document.getElementById('summary-items');
+      itemsWrap.innerHTML = '';
+      document.querySelectorAll('[data-q]')?.forEach((input) => {
+        const key = input.getAttribute('data-q');
+        const qty = Number(input.value) || 0;
+        if (qty > 0) {
+          const per = (PRICES.addons[key] || 0) * getCityMultiplier();
+          const line = document.createElement('div');
+          line.className = 'summary-line';
+          line.innerHTML = `<span>${labelFromKey(key)} × ${qty}</span><b>${formatUsd(per * qty)}</b>`;
+          itemsWrap.appendChild(line);
+        }
+      });
+    }
+
+    function labelFromKey(key) {
+      const map = {
+        windows: 'Window cleaning',
+        fridge: 'Refrigerator cleaning',
+        dishwashing: 'Dishwashing (hr)',
+        ironing: 'Ironing (hr)',
+        closet: 'Closet/Pantry cleaning',
+        chandelier: 'Chandelier cleaning',
+        balcony: 'Balcony cleaning',
+        walls: 'Wall washing (10 m²)',
+        blinds: 'Blinds cleaning (1 m²)',
+        extraCleaner: 'Extra cleaner',
+        kitchenSet: 'Kitchen set cleaning',
+        oven: 'Oven cleaning',
+        microwave: 'Microwave cleaning',
+        dishwasher: 'Dishwasher cleaning',
+        curtains: 'Curtain removal/installation',
+        ceiling: 'Ceiling cleaning (1 m²)',
+        keys: 'Key delivery'
+      };
+      return map[key] || key;
+    }
+
+    function collectOrderData() {
+      const property = getSelectedProperty();
+      const rooms = Number(document.getElementById('rooms').value);
+      const baths = Number(document.getElementById('baths').value);
+      const type = document.getElementById('type').value;
+      const base = calcBase();
+      const addons = [];
+      document.querySelectorAll('[data-q]')?.forEach((input) => {
+        const key = input.getAttribute('data-q');
+        const qty = Number(input.value) || 0;
+        if (qty > 0) {
+          const price = (PRICES.addons[key] || 0) * getCityMultiplier();
+          addons.push({ key, label: labelFromKey(key), qty, price });
+        }
+      });
+      const total = base + addons.reduce((s, a) => s + a.qty * a.price, 0);
+      const schedule = {
+        date: (document.getElementById('date').value || ''),
+        time: (document.getElementById('time').value || ''),
+      };
+      const address = {
+        street: document.getElementById('addr-street').value || '',
+        house: document.getElementById('addr-house').value || '',
+        apartment: document.getElementById('addr-apartment').value || '',
+        floor: document.getElementById('addr-floor').value || '',
+        comment: document.getElementById('addr-comment').value || ''
+      };
+      const contact = {
+        firstName: document.getElementById('first-name').value || '',
+        lastName: document.getElementById('last-name').value || '',
+        phone: document.getElementById('phone').value || '',
+        email: document.getElementById('email').value || ''
+      };
+      return { property, rooms, baths, type, base, addons, total, schedule, address, contact };
+    }
+
+    function buildEmailBody(order) {
+      const lines = [];
+      lines.push('Cleaning Order');
+      lines.push('');
+      lines.push(`Property: ${order.property}`);
+      lines.push(`Rooms: ${order.rooms}, Bathrooms: ${order.baths}`);
+      lines.push(`Cleaning type: ${order.type}`);
+      lines.push(`Base: ${formatUsd(order.base)}`);
+      if (order.addons.length) {
+        lines.push('Add-ons:');
+        order.addons.forEach(a => lines.push(` - ${a.label} x ${a.qty} = ${formatUsd(a.qty * a.price)}`));
+      } else {
+        lines.push('Add-ons: none');
+      }
+      lines.push(`Total: ${formatUsd(order.total)}`);
+      lines.push('');
+      lines.push(`Date: ${order.schedule.date}  Time: ${order.schedule.time}`);
+      lines.push('');
+      lines.push('Address:');
+      lines.push(` ${order.address.street}, House ${order.address.house}${order.address.apartment ? ', Apt ' + order.address.apartment : ''}${order.address.floor ? ', Floor ' + order.address.floor : ''}`);
+      if (order.address.comment) lines.push(` Notes: ${order.address.comment}`);
+      lines.push('');
+      lines.push('Contact:');
+      lines.push(` ${order.contact.firstName} ${order.contact.lastName}`);
+      lines.push(` Phone: ${order.contact.phone}`);
+      lines.push(` Email: ${order.contact.email}`);
+      return lines.join('\n');
+    }
+
+    async function submitOrder(order) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in to place an order');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            property_type: order.property,
+            rooms: order.rooms,
+            bathrooms: order.baths,
+            cleaning_type: order.type,
+            base_price: order.base,
+            addons: order.addons.map(a => ({
+              key: a.key,
+              label: a.label,
+              qty: a.qty,
+              price: a.price
+            })),
+            total_price: order.total,
+            schedule_date: order.schedule.date,
+            schedule_time: order.schedule.time,
+            address_street: order.address.street,
+            address_house: order.address.house,
+            address_apartment: order.address.apartment,
+            address_floor: order.address.floor,
+            address_comment: order.address.comment
+          })
+        });
+
+        let result;
+        try {
+          result = await response.json();
+        } catch (e) {
+          const text = await response.text();
+          throw new Error(`Server returned: ${response.status} ${response.statusText}\n${text}`);
+        }
+
+        if (response.ok) {
+          showOrderStatus('Your order accepted successfully.', false);
+          setTimeout(() => { window.location.href = 'account.html'; }, 4000);
+        } else {
+          showOrderStatus(result.message || `Failed to place order: ${response.status} ${response.statusText}`, true);
+        }
+      } catch (error) {
+        console.error('Order submission error:', error);
+        showOrderStatus(`Network error: ${error.message}`, true);
+      }
+    }
+
+    ['rooms','baths','type'].forEach(id => {
+      document.getElementById(id).addEventListener('change', updateSummary);
+    });
+    document.querySelectorAll('input[name="property"]').forEach(r => r.addEventListener('change', updateSummary));
+    document.querySelectorAll('[data-q]').forEach(n => n.addEventListener('input', updateSummary));
+
+    // Plus/minus handlers
+    document.querySelectorAll('.addon-row').forEach(row => {
+      const input = row.querySelector('.qty-input');
+      const dec = row.querySelector('.dec');
+      const inc = row.querySelector('.inc');
+      dec.addEventListener('click', () => {
+        const v = Math.max(0, (Number(input.value) || 0) - 1);
+        input.value = String(v);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      inc.addEventListener('click', () => {
+        const v = (Number(input.value) || 0) + 1;
+        input.value = String(v);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+    updateSummary();
+
+    mapPickerBtn?.addEventListener('click', openMapModal);
+    mapCloseBtn?.addEventListener('click', closeMapModal);
+    mapApplyBtn?.addEventListener('click', applySelectedAddress);
+    mapModal?.addEventListener('click', (e) => {
+      if (e.target === mapModal) closeMapModal();
+    });
+
+    // Order submit
+    document.getElementById('orderBtn').addEventListener('click', () => {
+      const order = collectOrderData();
+      // Simple required check
+      if (!order.schedule.date || !order.schedule.time) { alert('Please select date and time.'); return; }
+      if (!order.address.street || !order.address.house) { alert('Please fill Street and House.'); return; }
+      if (!order.contact.firstName || !order.contact.lastName || !order.contact.phone || !order.contact.email) { alert('Please fill all contact details.'); return; }
+      submitOrder(order);
+    });
+    })();
+  </script>
+</body>
+</html>
+
+

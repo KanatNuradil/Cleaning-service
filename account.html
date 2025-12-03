@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Your TazaBolsyn account">
+  <title>TazaBolsyn — My Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0b0f14; --card:#111723; --muted:#9fb0c0; --text:#e6edf6; --brand:#2dd4bf; --brand-600:#14b8a6; --ring:rgba(45,212,191,0.35); --shadow:0 10px 30px rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.2); --radius:14px; }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 800px at 80% -100px,#0e1624,transparent),radial-gradient(1000px 600px at -100px 30%,#0d1522,transparent),var(--bg);color:var(--text);line-height:1.6}
+    .container{width:100%;max-width:1100px;margin:0 auto;padding:20px}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,15,20,0.6);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid rgba(159,176,192,0.1)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .brand-mark{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#60a5fa)}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font-weight:600;background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#06231e;border:0;cursor:pointer;box-shadow:0 10px 24px var(--ring)}
+    .btn.secondary{background:#0f1724;color:var(--text);border:1px solid rgba(159,176,192,0.15);box-shadow:none}
+    .grid{display:grid;gap:14px}
+    .layout{display:grid;gap:16px}
+    @media(min-width:900px){.layout{grid-template-columns:260px 1fr}}
+    .card{background:linear-gradient(180deg,rgba(17,23,35,.75),rgba(17,23,35,.6));border:1px solid rgba(159,176,192,.12);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .section-title{margin:0 0 10px;font-size:20px}
+    .muted{color:var(--muted)}
+    .list{display:grid;gap:10px}
+    .row{display:grid;gap:10px;border:1px solid rgba(159,176,192,.12);border-radius:12px;padding:12px;background:#0f1724}
+    @media(min-width:720px){.row{grid-template-columns:1fr auto;align-items:center}}
+    table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    td,th{padding:10px 12px;text-align:left}
+    th{color:var(--muted);font-weight:600}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#0f1724;border:1px solid rgba(159,176,192,.2)}
+    nav a{color:var(--muted);text-decoration:none;display:block;padding:10px 12px;border-radius:10px}
+    nav a.active, nav a:hover{background:rgba(159,176,192,.08);color:var(--text)}
+    .form-select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(159,176,192,.2);background:#0f1724;color:var(--text)}
+    .status-text{font-size:14px;margin-top:8px;display:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand"><span class="brand-mark"></span><span>TazaBolsyn</span></div>
+      <div style="display:flex;gap:8px">
+        <a class="btn secondary" href="index.html">Home</a>
+        <a class="btn" href="Calculation.html">Make an Order</a>
+        <button class="btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 style="margin:14px 0">My Account</h1>
+    <p class="muted" id="greeting"></p>
+
+    <div class="layout">
+      <nav class="card" aria-label="Account sections">
+        <a href="#orders" class="active" data-tab="orders">Orders</a>
+        <a href="#addresses" data-tab="addresses">Saved Addresses</a>
+        <a href="#rewards" data-tab="rewards">Rewards</a>
+      </nav>
+
+      <div class="grid">
+        <section id="city" class="card">
+          <h2 class="section-title">Preferred city</h2>
+          <p class="muted" style="margin-top:0;margin-bottom:12px">Select your city to unlock the right pricing in the calculator.</p>
+          <label style="display:block">
+            <span style="display:block;font-weight:600;margin-bottom:6px">City</span>
+            <select id="citySelect" class="form-select">
+              <option value="">Select your city</option>
+            </select>
+          </label>
+          <button class="btn" id="saveCityBtn" style="margin-top:12px;width:100%">Save city</button>
+          <div id="cityStatus" class="status-text"></div>
+        </section>
+
+        <section id="orders" class="card">
+          <h2 class="section-title">Order history</h2>
+          <div id="ordersEmpty" class="muted" style="display:none">No orders yet.</div>
+          <div style="overflow:auto">
+            <table id="ordersTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Rooms/Baths</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Address</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="addresses" class="card">
+          <h2 class="section-title">Saved addresses</h2>
+          <div id="addressesList" class="list"></div>
+        </section>
+
+        <section id="rewards" class="card">
+          <h2 class="section-title">Rewards</h2>
+          <p class="muted">You earn 5% back on completed orders.</p>
+          <div class="row">
+            <div><b>Total earned</b><div id="totalRewards" style="font-size:22px;margin-top:6px">0.00₸</div></div>
+            <div><span class="pill" id="rewardRate">Rate: 5%</span></div>
+          </div>
+          <div id="rewardsList" class="list" style="margin-top:12px"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    const citySelect = document.getElementById('citySelect');
+    const cityStatus = document.getElementById('cityStatus');
+    const saveCityBtn = document.getElementById('saveCityBtn');
+    let cityOptions = [];
+    let cityStatusTimer;
+    let authToken = null;
+
+    function requireAuth() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!token) {
+        window.location.href = 'login.html';
+        return null;
+      }
+      const greeting = document.getElementById('greeting');
+      if (greeting) {
+        const base = `Signed in as ${user.firstName || ''} ${user.lastName || ''}`.trim();
+        greeting.dataset.baseName = base;
+        greeting.textContent = user.city ? `${base} · ${user.city}` : base;
+      }
+      authToken = token;
+      return { token, user };
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    async function fetchJSON(url, options) {
+      const res = await fetch(url, options);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || 'Request failed');
+      return data;
+    }
+
+    function fmtMoney(n){return `${Number(n).toFixed(2)}₸`}
+
+    function populateCityOptions(options, selectedCity) {
+      if (!citySelect) return;
+      citySelect.innerHTML = '<option value="">Select your city</option>';
+      options.forEach(city => {
+        const opt = document.createElement('option');
+        opt.value = city;
+        opt.textContent = city;
+        citySelect.appendChild(opt);
+      });
+      if (selectedCity && options.includes(selectedCity)) {
+        citySelect.value = selectedCity;
+      }
+    }
+
+    function showCityStatus(message, isError = false) {
+      if (!cityStatus) return;
+      clearTimeout(cityStatusTimer);
+      cityStatus.textContent = message;
+      cityStatus.style.display = 'block';
+      cityStatus.style.color = isError ? '#fca5a5' : '#6ee7b7';
+      cityStatusTimer = setTimeout(() => {
+        cityStatus.style.display = 'none';
+      }, 4000);
+    }
+
+    function updateStoredUserCity(city) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('user') || '{}');
+        stored.city = city || null;
+        localStorage.setItem('user', JSON.stringify(stored));
+      } catch (e) {
+        console.warn('Could not update cached user city', e);
+      }
+    }
+
+    function setGreetingCity(city) {
+      const greeting = document.getElementById('greeting');
+      if (!greeting) return;
+      const base = greeting.dataset.baseName || greeting.textContent || '';
+      greeting.textContent = city ? `${base} · ${city}` : base;
+    }
+
+    function renderOrders(orders){
+      const tbody = document.querySelector('#ordersTable tbody');
+      tbody.innerHTML = '';
+      if (!orders || orders.length === 0){
+        document.getElementById('ordersEmpty').style.display = 'block';
+        return;
+      }
+      document.getElementById('ordersEmpty').style.display = 'none';
+      orders.forEach(o => {
+        const tr = document.createElement('tr');
+        const addr = `${o.address.street} ${o.address.house}${o.address.apartment? ', apt ' + o.address.apartment:''}`;
+        tr.innerHTML = `
+          <td>${o.id}</td>
+          <td>${new Date(o.created_at).toLocaleString()}</td>
+          <td>${o.cleaning_type}</td>
+          <td>${o.rooms}/${o.bathrooms}</td>
+          <td>${fmtMoney(o.total_price)}</td>
+          <td><span class="pill">${o.status}</span></td>
+          <td>${addr}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAddresses(addresses){
+      const root = document.getElementById('addressesList');
+      root.innerHTML = '';
+      if (!addresses || addresses.length === 0){
+        root.innerHTML = '<div class="muted">No saved addresses yet.</div>';
+        return;
+      }
+      addresses.forEach(a => {
+        const el = document.createElement('div');
+        el.className = 'row';
+        const line = `${a.street} ${a.house}${a.apartment? ', apt ' + a.apartment:''}`;
+        el.innerHTML = `<div><b>${line}</b><div class="muted">${a.comment || ''}</div></div>`;
+        root.appendChild(el);
+      });
+    }
+
+    function renderRewards(payload){
+      const { rate, totalEarned, rewards } = payload;
+      document.getElementById('totalRewards').textContent = fmtMoney(totalEarned);
+      document.getElementById('rewardRate').textContent = `Rate: ${Math.round(rate*100)}%`;
+      const root = document.getElementById('rewardsList');
+      root.innerHTML = '';
+      if (!rewards || rewards.length === 0){
+        root.innerHTML = '<div class="muted">Rewards will appear after your first order.</div>';
+        return;
+      }
+      rewards.forEach(r => {
+        const el = document.createElement('div');
+        el.className = 'row';
+        el.innerHTML = `<div><b>Order #${r.orderId}</b><div class="muted">${new Date(r.created_at).toLocaleString()}</div></div><div>${fmtMoney(r.amount)}</div>`;
+        root.appendChild(el);
+      });
+    }
+
+    function renderProfileCity(profile){
+      if (!profile) return;
+      const currentCity = profile.city || '';
+      if (citySelect && currentCity && !cityOptions.includes(currentCity)) {
+        cityOptions.push(currentCity);
+        cityOptions.sort((a, b) => a.localeCompare(b));
+        populateCityOptions(cityOptions, currentCity);
+      } else if (citySelect) {
+        citySelect.value = currentCity || '';
+      }
+      updateStoredUserCity(currentCity || null);
+      setGreetingCity(currentCity || null);
+    }
+
+    async function saveCityPreference(){
+      if (!citySelect || !saveCityBtn) return;
+      const city = citySelect.value;
+      if (!city) {
+        showCityStatus('Please choose a city from the list.', true);
+        return;
+      }
+      if (!authToken) {
+        showCityStatus('You are not authenticated. Please sign in again.', true);
+        return;
+      }
+      saveCityBtn.disabled = true;
+      showCityStatus('Saving...', false);
+      try {
+        await fetchJSON(`${API_BASE}/account/profile`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ city })
+        });
+        showCityStatus('City updated successfully.', false);
+        updateStoredUserCity(city);
+        setGreetingCity(city);
+      } catch (e) {
+        showCityStatus(e.message, true);
+      } finally {
+        saveCityBtn.disabled = false;
+      }
+    }
+
+    async function load(){
+      const auth = requireAuth();
+      if (!auth) return;
+      const { token } = auth;
+      try {
+        const [profilePayload, orders, addresses, rewards] = await Promise.all([
+          fetchJSON(`${API_BASE}/account/profile`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetchJSON(`${API_BASE}/orders`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetchJSON(`${API_BASE}/account/addresses`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetchJSON(`${API_BASE}/account/rewards`, { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        cityOptions = (profilePayload.cities || []).slice();
+        const selectedCity = profilePayload.profile?.city || '';
+        populateCityOptions(cityOptions, selectedCity);
+        renderProfileCity(profilePayload.profile);
+        renderOrders(orders.orders);
+        renderAddresses(addresses.addresses);
+        renderRewards(rewards);
+      } catch (e) {
+        alert(e.message);
+        if (/token/i.test(e.message)) logout();
+      }
+    }
+
+    // simple tabs highlight
+    document.querySelectorAll('[data-tab]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        document.querySelectorAll('[data-tab]').forEach(a => a.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+      });
+    });
+
+    if (saveCityBtn) {
+      saveCityBtn.addEventListener('click', saveCityPreference);
+    }
+
+    load();
+  </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Recover your TazaBolsyn account password">
+  <title>TazaBolsyn — Forgot Password</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b0f14;--card:#111723;--muted:#9fb0c0;--text:#e6edf6;--brand:#2dd4bf;--brand-600:#14b8a6;--ring:rgba(45,212,191,.35);--shadow:0 10px 30px rgba(0,0,0,.35),0 4px 10px rgba(0,0,0,.2);--radius:14px}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 800px at 80% -100px,#0e1624,transparent),radial-gradient(1000px 600px at -100px 30%,#0d1522,transparent),var(--bg);color:var(--text);line-height:1.6;display:grid;place-items:center;min-height:100vh}
+    .auth-container{width:100%;max-width:420px;padding:20px}
+    .auth-card{background:linear-gradient(180deg,rgba(17,23,35,.75),rgba(17,23,35,.6));border:1px solid rgba(159,176,192,.12);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px}
+    .brand-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),#60a5fa)}
+    .brand-text{font-size:24px;font-weight:700}
+    .auth-title{font-size:24px;font-weight:700;margin:0 0 6px;text-align:center}
+    .auth-subtitle{color:var(--muted);text-align:center;margin:0 0 20px}
+    label{display:block;font-weight:600;margin:10px 0 6px}
+    .form-input{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(159,176,192,.2);background:#0f1724;color:var(--text)}
+    .btn{width:100%;padding:14px 20px;border-radius:12px;font-weight:600;background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#06231e;border:0;cursor:pointer;box-shadow:0 10px 24px var(--ring);margin-top:14px}
+    .info{background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.3);color:#6ee7b7;padding:12px 16px;border-radius:10px;margin:12px 0;display:none}
+    .error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:12px 16px;border-radius:10px;margin:12px 0;display:none}
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="brand"><div class="brand-mark"></div><div class="brand-text">TazaBolsyn</div></div>
+      <h1 class="auth-title">Forgot password</h1>
+      <p class="auth-subtitle">Enter your email to receive a reset link</p>
+      <div id="info" class="info"></div>
+      <div id="error" class="error"></div>
+      <form id="forgotForm">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" class="form-input" required placeholder="you@example.com">
+        <button type="submit" class="btn">Send reset link</button>
+      </form>
+      <div style="text-align:center;margin-top:10px"><a href="login.html" style="color:#2dd4bf;text-decoration:none;font-weight:600">Back to login</a></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    const info = document.getElementById('info');
+    const errorBox = document.getElementById('error');
+    const RESET_PAGE = new URL('reset.html', window.location.href).toString();
+    let infoTimer;
+    let errorTimer;
+
+    function showInfo(message) {
+      clearTimeout(infoTimer);
+      info.textContent = message;
+      info.style.display = 'block';
+      infoTimer = setTimeout(() => {
+        info.style.display = 'none';
+      }, 4000);
+    }
+
+    function showError(message) {
+      clearTimeout(errorTimer);
+      errorBox.textContent = message;
+      errorBox.style.display = 'block';
+      errorTimer = setTimeout(() => {
+        errorBox.style.display = 'none';
+      }, 4000);
+    }
+
+    document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      info.style.display = 'none';
+      errorBox.style.display = 'none';
+      const email = document.getElementById('email').value;
+      try {
+        const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || 'Request failed. Try again later.');
+        }
+
+        showInfo('If the email exists, a reset link has been created. Copy the token below and paste it on the next screen:' + (data.demoToken ? ' ' + data.demoToken : ''));
+        window.location.href = RESET_PAGE;
+      } catch (err) {
+        showError(err.message || 'Request failed. Try again later.');
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+

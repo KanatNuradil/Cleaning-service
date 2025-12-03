@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TazaBolsyn — Cleaner Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0b0f14; --card:#111723; --muted:#9fb0c0; --text:#e6edf6; --brand:#2dd4bf; --brand-600:#14b8a6; --ring:rgba(45,212,191,0.35); --shadow:0 10px 30px rgba(0,0,0,0.35),0 4px 10px rgba(0,0,0,0.2); --radius:14px; }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 800px at 80% -100px,#0e1624,transparent),radial-gradient(1000px 600px at -100px 30%,#0d1522,transparent),var(--bg);color:var(--text);line-height:1.6}
+    .container{width:100%;max-width:1100px;margin:0 auto;padding:20px}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,15,20,0.6);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid rgba(159,176,192,0.1)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .brand-mark{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#60a5fa)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 14px;border-radius:10px;font-weight:600;background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#06231e;border:0;cursor:pointer;box-shadow:0 8px 18px var(--ring);font-size:14px}
+    .btn.secondary{background:#0f1724;color:var(--text);border:1px solid rgba(159,176,192,0.2);box-shadow:none}
+    .btn.small{padding:6px 10px;font-size:13px}
+    .layout{display:grid;gap:16px}
+    @media(min-width:900px){.layout{grid-template-columns:260px 1fr}}
+    .card{background:linear-gradient(180deg,rgba(17,23,35,.75),rgba(17,23,35,.6));border:1px solid rgba(159,176,192,.12);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .section-title{margin:0 0 10px;font-size:20px}
+    .muted{color:var(--muted);font-size:14px}
+    nav a{display:block;padding:8px 10px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:14px}
+    nav a.active,nav a:hover{background:rgba(159,176,192,.08);color:var(--text)}
+    .grid{display:grid;gap:10px}
+    .pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:#020617;border:1px solid rgba(148,163,184,0.4);font-size:11px}
+    .tag{display:inline-flex;align-items:center;padding:2px 6px;border-radius:999px;border:1px solid rgba(148,163,184,0.4);font-size:11px;color:var(--muted)}
+    select{background:#020617;border-radius:8px;border:1px solid rgba(148,163,184,0.4);color:var(--text);padding:4px 8px;font-size:13px}
+    .status-flow{display:flex;flex-wrap:wrap;gap:8px}
+    .status-btn{flex:1 1 180px;min-width:120px;padding:8px 10px;border-radius:999px;border:1px solid rgba(148,163,184,0.3);background:#050b15;color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.02em;cursor:pointer;transition:all 0.2s ease}
+    .status-btn:hover:not(:disabled){border-color:var(--brand);color:var(--text)}
+    .status-btn:disabled{cursor:not-allowed;opacity:0.4}
+    .status-btn.completed{background:rgba(45,212,191,0.12);border-color:rgba(45,212,191,0.4);color:var(--brand)}
+    .status-btn.active{background:rgba(96,165,250,0.12);border-color:rgba(96,165,250,0.5);color:#8ab4ff}
+    .pill.accent{background:rgba(45,212,191,0.15);border-color:rgba(45,212,191,0.4);color:var(--brand)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <span>Cleaner — TazaBolsyn</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="cleanerName" class="muted"></span>
+        <a href="index.html" class="btn secondary small">Website</a>
+        <button class="btn small" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="layout">
+      <nav class="card">
+        <h2 class="section-title" style="font-size:18px">My work</h2>
+        <p class="muted" style="margin:0 0 8px">View your schedule and assigned orders.</p>
+        <a href="#schedule" data-tab="schedule" class="active">Schedule</a>
+        <a href="#orders" data-tab="orders">Orders</a>
+      </nav>
+
+      <div class="grid">
+        <section id="schedule" class="card">
+          <h2 class="section-title">Upcoming work days</h2>
+          <div id="scheduleList" class="grid"></div>
+        </section>
+
+        <section id="orders" class="card" style="display:none">
+          <h2 class="section-title">Assigned orders</h2>
+          <p class="muted" style="margin:0 0 8px">Update the status as you work through the job.</p>
+          <div id="ordersList" class="grid"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+
+    function requireCleaner(){
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!token || user.role !== 'cleaner'){
+        window.location.href = 'login.html';
+        return null;
+      }
+      document.getElementById('cleanerName').textContent = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+      return { token, user };
+    }
+
+    function logout(){
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    async function fetchJSON(url, options){
+      const res = await fetch(url, options);
+      const data = await res.json().catch(()=> ({}));
+      if (!res.ok) throw new Error(data.message || 'Request failed');
+      return data;
+    }
+
+    function renderSchedule(list){
+      const root = document.getElementById('scheduleList');
+      root.innerHTML = '';
+      if (!list.length){
+        const div = document.createElement('div');
+        div.className = 'muted';
+        div.textContent = 'No scheduled work days yet.';
+        root.appendChild(div);
+        return;
+      }
+      list.forEach(s => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.style.padding = '10px';
+        el.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <div>
+              <div><strong>${s.work_date}</strong></div>
+              <div class="muted">${s.start_time}–${s.end_time}</div>
+            </div>
+            ${s.note ? `<div class="muted" style="max-width:260px">${s.note}</div>` : ''}
+          </div>
+        `;
+        root.appendChild(el);
+      });
+    }
+
+    function renderOrders(data){
+      const { orders, statuses } = data;
+      const root = document.getElementById('ordersList');
+      root.innerHTML = '';
+      if (!orders.length){
+        const div = document.createElement('div');
+        div.className = 'muted';
+        div.textContent = 'No assigned orders yet.';
+        root.appendChild(div);
+        return;
+      }
+      orders.forEach(o => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        const addr = `${o.address.street} ${o.address.house}${o.address.apartment ? ', apt ' + o.address.apartment : ''}`;
+        const currentIndex = Math.max(statuses.indexOf(o.status), -1);
+        const currentLabel = currentIndex >= 0 ? statuses[currentIndex] : 'Not started';
+        const statusButtons = statuses.map((statusLabel, idx) => {
+          const isCompleted = idx < currentIndex;
+          const isActive = idx === currentIndex;
+          const isEnabled = idx === currentIndex + 1 || idx === currentIndex || (currentIndex === -1 && idx === 0);
+          const shouldDisable = idx < currentIndex ? true : !isEnabled;
+          const classes = ['status-btn'];
+          if (isCompleted) classes.push('completed');
+          if (isActive) classes.push('active');
+          return `
+            <button
+              class="${classes.join(' ')}"
+              data-action="status-step"
+              data-order-id="${o.id}"
+              data-status="${statusLabel}"
+              ${shouldDisable ? 'disabled' : ''}
+            >${statusLabel}</button>
+          `;
+        }).join('');
+        el.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+            <div>
+              <div><strong>Order #${o.id}</strong> <span class="tag">${o.cleaning_type}</span></div>
+              <div class="muted">${o.schedule_date} • ${o.schedule_time}</div>
+              <div class="muted">Client: ${o.customer.firstName} ${o.customer.lastName}</div>
+              <div class="muted">Address: ${addr}</div>
+              <div style="margin-top:10px">
+                <span class="muted" style="font-size:12px">Current status</span>
+                <span class="pill accent" style="margin-left:6px">${currentLabel}</span>
+              </div>
+            </div>
+            <div style="flex:1;min-width:260px;margin-top:10px">
+              <div class="status-flow">
+                ${statusButtons}
+              </div>
+            </div>
+          </div>
+        `;
+        root.appendChild(el);
+      });
+    }
+
+    async function loadAll(){
+      const auth = requireCleaner();
+      if (!auth) return;
+      const { token } = auth;
+      try{
+        const [sched, orders] = await Promise.all([
+          fetchJSON(`${API_BASE}/cleaner/schedules`, { headers:{'Authorization':`Bearer ${token}`} }),
+          fetchJSON(`${API_BASE}/cleaner/orders`, { headers:{'Authorization':`Bearer ${token}`} })
+        ]);
+        renderSchedule(sched.schedules || []);
+        renderOrders(orders);
+      }catch(e){
+        alert(e.message);
+        if (/token|permission/i.test(e.message)) logout();
+      }
+    }
+
+    document.getElementById('ordersList').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action="status-step"]');
+      if (!btn || btn.disabled) return;
+      const orderId = btn.getAttribute('data-order-id');
+      const status = btn.getAttribute('data-status');
+      const auth = requireCleaner();
+      if (!auth) return;
+      const { token } = auth;
+      try{
+        await fetchJSON(`${API_BASE}/cleaner/orders/${orderId}/status`, {
+          method:'PATCH',
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+          body: JSON.stringify({ status })
+        });
+        await loadAll();
+      }catch(e){
+        alert(e.message);
+      }
+    });
+
+    document.querySelectorAll('[data-tab]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab = link.getAttribute('data-tab');
+        document.querySelectorAll('[data-tab]').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+        document.getElementById('schedule').style.display = tab === 'schedule' ? '' : 'none';
+        document.getElementById('orders').style.display = tab === 'orders' ? '' : 'none';
+      });
+    });
+
+    loadAll();
+  </script>
+</body>
+</html>
+
+
+

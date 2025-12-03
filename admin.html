@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TazaBolsyn — Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0b0f14; --card:#111723; --muted:#9fb0c0; --text:#e6edf6; --brand:#2dd4bf; --brand-600:#14b8a6; --ring:rgba(45,212,191,0.35); --shadow:0 10px 30px rgba(0,0,0,0.35),0 4px 10px rgba(0,0,0,0.2); --radius:14px; }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 800px at 80% -100px,#0e1624,transparent),radial-gradient(1000px 600px at -100px 30%,#0d1522,transparent),var(--bg);color:var(--text);line-height:1.6}
+    .container{width:100%;max-width:1200px;margin:0 auto;padding:20px}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,15,20,0.6);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid rgba(159,176,192,0.1)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .brand-mark{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#60a5fa)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 14px;border-radius:10px;font-weight:600;background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#06231e;border:0;cursor:pointer;box-shadow:0 8px 18px var(--ring);font-size:14px}
+    .btn.secondary{background:#0f1724;color:var(--text);border:1px solid rgba(159,176,192,0.2);box-shadow:none}
+    .btn.small{padding:6px 10px;font-size:13px}
+    .layout{display:grid;gap:18px}
+    @media(min-width:960px){.layout{grid-template-columns:280px 1fr}}
+    .card{background:linear-gradient(180deg,rgba(17,23,35,.75),rgba(17,23,35,.6));border:1px solid rgba(159,176,192,.12);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .section-title{margin:0 0 10px;font-size:20px}
+    .muted{color:var(--muted);font-size:14px}
+    nav a{display:block;padding:8px 10px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:14px}
+    nav a.active,nav a:hover{background:rgba(159,176,192,.08);color:var(--text)}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px;font-size:13px}
+    th,td{padding:8px 10px;text-align:left}
+    th{color:var(--muted);font-weight:600}
+    tbody tr{background:#0f1724;border-radius:10px}
+    tbody tr td:first-child{border-top-left-radius:10px;border-bottom-left-radius:10px}
+    tbody tr td:last-child{border-top-right-radius:10px;border-bottom-right-radius:10px}
+    select, input[type="date"], input[type="time"]{
+      background:#020617;border-radius:8px;border:1px solid rgba(148,163,184,0.4);color:var(--text);padding:4px 8px;font-size:13px
+    }
+    .pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:#020617;border:1px solid rgba(148,163,184,0.4);font-size:11px}
+    .grid{display:grid;gap:10px}
+    .field{display:grid;gap:4px}
+    label span{font-size:13px;font-weight:500}
+    input,textarea{background:#020617;border-radius:8px;border:1px solid rgba(148,163,184,0.4);color:var(--text);padding:6px 8px;font-size:13px}
+    textarea{resize:vertical;min-height:60px}
+    .tag{display:inline-flex;align-items:center;padding:2px 6px;border-radius:999px;border:1px solid rgba(148,163,184,0.4);font-size:11px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <span>Admin — TazaBolsyn</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="adminName" class="muted"></span>
+        <a href="index.html" class="btn secondary small">Website</a>
+        <button class="btn small" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="layout">
+      <nav class="card" aria-label="Admin sections">
+        <h2 class="section-title" style="font-size:18px">Dashboard</h2>
+        <p class="muted" style="margin:0 0 8px">Manage orders and cleaners.</p>
+        <a href="#orders" data-tab="orders" class="active">Orders</a>
+        <a href="#schedules" data-tab="schedules">Cleaner schedules</a>
+      </nav>
+
+      <div class="grid">
+        <section id="orders" class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+            <div>
+              <h2 class="section-title">Orders</h2>
+              <p class="muted" style="margin:0">Assign cleaners and update statuses.</p>
+            </div>
+          </div>
+          <div style="overflow:auto;margin-top:10px">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Address</th>
+                  <th>Cleaner</th>
+                  <th>Status</th>
+                  <th>When</th>
+                  <th>Total</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="schedules" class="grid" style="display:none">
+          <div class="card">
+            <h2 class="section-title">Add cleaner</h2>
+            <p class="muted" style="margin:0 0 10px">Create login credentials for a new cleaner.</p>
+            <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+              <label class="field">
+                <span>First name</span>
+                <input type="text" id="cleanerFirst" placeholder="e.g. Dana">
+              </label>
+              <label class="field">
+                <span>Last name</span>
+                <input type="text" id="cleanerLast" placeholder="e.g. Aitova">
+              </label>
+              <label class="field">
+                <span>Email</span>
+                <input type="email" id="cleanerEmail" placeholder="cleaner@example.com">
+              </label>
+              <label class="field">
+                <span>Phone</span>
+                <input type="tel" id="cleanerPhone" placeholder="+1 555 123 4567">
+              </label>
+              <label class="field">
+                <span>Password</span>
+                <input type="password" id="cleanerPassword" placeholder="At least 8 characters">
+              </label>
+            </div>
+            <button class="btn small" id="createCleanerBtn" style="margin-top:8px">Create cleaner</button>
+            <span class="muted" id="cleanerMessage"></span>
+          </div>
+
+          <div class="card">
+            <h2 class="section-title">Cleaner schedules</h2>
+            <p class="muted" style="margin:0 0 10px">Plan work days for cleaners.</p>
+            <div class="grid" style="margin-bottom:12px">
+              <div class="field">
+                <span>Create work day</span>
+                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">
+                  <select id="schedCleaner"></select>
+                  <input type="date" id="schedDate">
+                  <input type="time" id="schedStart">
+                  <input type="time" id="schedEnd">
+                </div>
+                <textarea id="schedNote" placeholder="Note (optional)"></textarea>
+                <button class="btn small" id="createScheduleBtn" style="margin-top:4px;align-self:flex-start">Save schedule</button>
+                <span class="muted" id="schedMessage"></span>
+              </div>
+            </div>
+            <div class="grid">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                <span class="muted">Upcoming work days</span>
+              </div>
+              <div id="schedulesList" class="grid"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+
+    function requireAdmin() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!token || user.role !== 'admin') {
+        window.location.href = 'login.html';
+        return null;
+      }
+      document.getElementById('adminName').textContent = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+      return { token, user };
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    function fmtMoney(n){return `${Number(n).toFixed(2)}₸`}
+
+    let STATE = {
+      cleaners: [],
+      orders: [],
+      statuses: []
+    };
+
+    async function fetchJSON(url, options){
+      const res = await fetch(url, options);
+      const data = await res.json().catch(()=> ({}));
+      if(!res.ok) throw new Error(data.message || 'Request failed');
+      return data;
+    }
+
+    function renderOrders(){
+      const tbody = document.getElementById('ordersBody');
+      tbody.innerHTML = '';
+      if (!STATE.orders.length){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 9;
+        td.className = 'muted';
+        td.textContent = 'No orders yet.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+      STATE.orders.forEach(order => {
+        const tr = document.createElement('tr');
+        const addr = `${order.address.street} ${order.address.house}${order.address.apartment ? ', apt ' + order.address.apartment : ''}`;
+        const cleanerOptions = ['<option value="">Unassigned</option>']
+          .concat(STATE.cleaners.map(c => `<option value="${c.id}" ${order.cleaner && c.id === order.cleaner.id ? 'selected' : ''}>${c.firstName} ${c.lastName}</option>`))
+          .join('');
+        const statusOptions = STATE.statuses.map(s => `<option value="${s}" ${s === order.status ? 'selected' : ''}>${s}</option>`).join('');
+
+        tr.innerHTML = `
+          <td>${order.id}</td>
+          <td>${new Date(order.created_at).toLocaleString()}</td>
+          <td>${order.customer.firstName} ${order.customer.lastName}</td>
+          <td><span class="tag">${order.property_type}</span> ${addr}</td>
+          <td>
+            <select data-action="assign-cleaner" data-id="${order.id}">
+              ${cleanerOptions}
+            </select>
+          </td>
+          <td>
+            <select data-action="status" data-id="${order.id}">
+              ${statusOptions}
+            </select>
+          </td>
+          <td>${order.schedule_date} ${order.schedule_time}</td>
+          <td>${fmtMoney(order.total_price)}</td>
+          <td><button class="btn secondary small" data-action="save" data-id="${order.id}">Save</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderCleanersForSchedule(){
+      const sel = document.getElementById('schedCleaner');
+      sel.innerHTML = '';
+      STATE.cleaners.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.firstName} ${c.lastName}`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function renderSchedules(list){
+      const root = document.getElementById('schedulesList');
+      root.innerHTML = '';
+      if (!list.length){
+        const div = document.createElement('div');
+        div.className = 'muted';
+        div.textContent = 'No schedules yet.';
+        root.appendChild(div);
+        return;
+      }
+      list.forEach(s => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.style.padding = '10px';
+        el.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <div>
+              <div><strong>${s.cleaner.firstName} ${s.cleaner.lastName}</strong></div>
+              <div class="muted">${s.work_date} • ${s.start_time}–${s.end_time}</div>
+            </div>
+            ${s.note ? `<div class="muted" style="max-width:260px">${s.note}</div>` : ''}
+          </div>
+        `;
+        root.appendChild(el);
+      });
+    }
+
+    async function loadAll(){
+      const auth = requireAdmin();
+      if (!auth) return;
+      const { token } = auth;
+      try{
+        const [ordersRes, cleanersRes, schedulesRes] = await Promise.all([
+          fetchJSON(`${API_BASE}/admin/orders`, { headers:{'Authorization':`Bearer ${token}`} }),
+          fetchJSON(`${API_BASE}/admin/cleaners`, { headers:{'Authorization':`Bearer ${token}`} }),
+          fetchJSON(`${API_BASE}/admin/schedules`, { headers:{'Authorization':`Bearer ${token}`} })
+        ]);
+        STATE.orders = ordersRes.orders || [];
+        STATE.statuses = ordersRes.statuses || [];
+        STATE.cleaners = cleanersRes.cleaners || [];
+        renderOrders();
+        renderCleanersForSchedule();
+        renderSchedules(schedulesRes.schedules || []);
+        renderExistingCleaners();
+      }catch(e){
+        alert(e.message);
+        if (/token|permission/i.test(e.message)) logout();
+      }
+    }
+
+    document.getElementById('ordersBody').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action="save"]');
+      if (!btn) return;
+      const id = Number(btn.getAttribute('data-id'));
+      const row = btn.closest('tr');
+      const cleanerSelect = row.querySelector('select[data-action="assign-cleaner"]');
+      const statusSelect = row.querySelector('select[data-action="status"]');
+      const cleanerId = cleanerSelect.value ? Number(cleanerSelect.value) : null;
+      const status = statusSelect.value;
+      const auth = requireAdmin();
+      if (!auth) return;
+      const { token } = auth;
+      try{
+        await fetchJSON(`${API_BASE}/admin/orders/${id}`, {
+          method:'PATCH',
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+          body: JSON.stringify({ cleanerId, status })
+        });
+        await loadAll();
+      }catch(e){
+        alert(e.message);
+      }
+    });
+
+    function renderExistingCleaners(){
+      const select = document.getElementById('schedCleaner');
+      const noCleanersNotice = document.getElementById('cleanerMessage');
+      if (!STATE.cleaners.length){
+        noCleanersNotice.textContent = 'No cleaners yet. Create one to start scheduling.';
+      } else if (noCleanersNotice.textContent.includes('No cleaners')){
+        noCleanersNotice.textContent = '';
+      }
+      renderCleanersForSchedule();
+    }
+
+    document.getElementById('createCleanerBtn').addEventListener('click', async () => {
+      const first_name = document.getElementById('cleanerFirst').value.trim();
+      const last_name = document.getElementById('cleanerLast').value.trim();
+      const email = document.getElementById('cleanerEmail').value.trim();
+      const phone = document.getElementById('cleanerPhone').value.trim();
+      const password = document.getElementById('cleanerPassword').value;
+      const msg = document.getElementById('cleanerMessage');
+      msg.textContent = '';
+      if (!first_name || !last_name || !email || !phone || !password){
+        msg.textContent = 'Please fill all cleaner fields.';
+        return;
+      }
+      const auth = requireAdmin();
+      if (!auth) return;
+      const { token } = auth;
+      try{
+        const payload = { firstName: first_name, lastName: last_name, email, phone, password };
+        await fetchJSON(`${API_BASE}/admin/cleaners`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+          body: JSON.stringify(payload)
+        });
+        msg.textContent = 'Cleaner created.';
+        document.getElementById('cleanerFirst').value = '';
+        document.getElementById('cleanerLast').value = '';
+        document.getElementById('cleanerEmail').value = '';
+        document.getElementById('cleanerPhone').value = '';
+        document.getElementById('cleanerPassword').value = '';
+        const cleanersRes = await fetchJSON(`${API_BASE}/admin/cleaners`, { headers:{'Authorization':`Bearer ${token}`} });
+        STATE.cleaners = cleanersRes.cleaners || [];
+        renderCleanersForSchedule();
+        renderExistingCleaners();
+      }catch(e){
+        msg.textContent = e.message;
+      }
+    });
+
+    document.getElementById('createScheduleBtn').addEventListener('click', async () => {
+      const cleanerId = Number(document.getElementById('schedCleaner').value);
+      const work_date = document.getElementById('schedDate').value;
+      const start_time = document.getElementById('schedStart').value;
+      const end_time = document.getElementById('schedEnd').value;
+      const note = document.getElementById('schedNote').value;
+      const msg = document.getElementById('schedMessage');
+      msg.textContent = '';
+      if (!cleanerId || !work_date || !start_time || !end_time){
+        msg.textContent = 'Please fill cleaner, date and time.';
+        return;
+      }
+      const auth = requireAdmin();
+      if (!auth) return;
+      const { token } = auth;
+      try{
+        await fetchJSON(`${API_BASE}/admin/schedules`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+          body: JSON.stringify({ cleanerId, work_date, start_time, end_time, note })
+        });
+        msg.textContent = 'Schedule saved.';
+        document.getElementById('schedNote').value = '';
+        const schedulesRes = await fetchJSON(`${API_BASE}/admin/schedules`, { headers:{'Authorization':`Bearer ${token}`} });
+        renderSchedules(schedulesRes.schedules || []);
+      }catch(e){
+        msg.textContent = e.message;
+      }
+    });
+
+    // Tabs
+    document.querySelectorAll('[data-tab]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab = link.getAttribute('data-tab');
+        document.querySelectorAll('[data-tab]').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+        document.getElementById('orders').style.display = tab === 'orders' ? '' : 'none';
+        document.getElementById('schedules').style.display = tab === 'schedules' ? '' : 'none';
+      });
+    });
+
+    loadAll();
+  </script>
+</body>
+</html>
+
+
